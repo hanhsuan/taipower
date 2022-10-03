@@ -1,0 +1,32 @@
+{
+    "type": "residential",
+    "max_kw": 18,
+    "power_factor": 80,
+    "energy_consumption": 550,
+    "level": [
+        {
+            "consumption_level": 120,
+            "consumption_rate": 1.63
+        },
+        {
+            "consumption_level": 330,
+            "consumption_rate": 2.38
+        },
+        {
+            "consumption_level": 500,
+            "consumption_rate": 3.52
+        },
+        {
+            "consumption_level": 700,
+            "consumption_rate": 4.80
+        },
+        {
+            "consumption_level": 1000,
+            "consumption_rate": 5.66
+        },
+        {
+            "consumption_level": "above",
+            "consumption_rate": 6.99
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+{
+    "type": "high_voltage_tou",
+    "option": 2,
+    "power_factor": 80,
+    "energy_consumption": {
+        "peak": 10000,
+        "partial_peak": 15000,
+        "off_peak": 20000,
+        "sat_partial_peak": 5000
+    },
+    "info": {
+        "regular_contract": {
+            "contracted_demand": 500,
+            "demand_charge_rate": 223.6,
+            "energy_charge_rate": 4.41
+        },
+        "partial_peak_contract": {
+            "contracted_demand": 0,
+            "demand_charge_rate": 47.2,
+            "energy_charge_rate": 2.76
+        },
+        "sat_partial_peak_contract": {
+            "contracted_demand": 0,
+            "demand_charge_rate": 47.2,
+            "energy_charge_rate": 1.78
+        },
+        "off_peak_contract": {
+            "contracted_demand": 0,
+            "demand_charge_rate": 47.2,
+            "energy_charge_rate": 1.26
+        }
+    }
+}

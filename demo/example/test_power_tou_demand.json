@@ -1,0 +1,29 @@
+{
+    "type": "power_tou",
+    "option": 1,
+    "basic_type": "demand",
+    "power_factor": 80,
+    "energy_consumption": {
+        "peak": 6000,
+        "off_peak": 4000,
+        "sat_partial_peak": 1000
+    },
+    "info": {
+        "customer_charge": 262.5,
+        "regular_contract": {
+            "contracted_demand": 95,
+            "demand_charge_rate": 236.2,
+            "energy_charge_rate": 3.24
+        },
+        "sat_partial_peak_contract": {
+            "contracted_demand": 0,
+            "demand_charge_rate": 47.2,
+            "energy_charge_rate": 2.14
+        },
+        "off_peak_contract": {
+            "contracted_demand": 0,
+            "demand_charge_rate": 47.2,
+            "energy_charge_rate": 1.39
+        }
+    }
+}

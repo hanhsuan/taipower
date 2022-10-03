@@ -1,0 +1,19 @@
+{
+    "type": "simple_tou",
+    "option": 1,
+    "max_kw": 18,
+    "power_factor": 80,
+    "energy_consumption": {
+        "peak": 1200,
+        "off_peak": 500,
+        "sun_sat_off_peak": 500
+    },
+    "info": {
+        "customer_charge": 75,
+        "portion_of_usage_limit": 2000,
+        "peak_rate": 4.44,
+        "off_peak_rate": 1.80,
+        "sun_sat_off_peak": 1.80,
+        "exceed_limit_rate": 0.96
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "type": "commercial",
+    "max_kw": 18,
+    "power_factor": 80,
+    "energy_consumption": 750,
+    "level": [
+        {
+            "consumption_level": 330,
+            "consumption_rate": 2.53
+        },
+        {
+            "consumption_level": 700,
+            "consumption_rate": 3.55
+        },
+        {
+            "consumption_level": 1500,
+            "consumption_rate": 4.25
+        },
+        {
+            "consumption_level": "above",
+            "consumption_rate": 6.43
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "type": "power_tou",
+    "option": 1,
+    "basic_type": "device",
+    "power_factor": 80,
+    "energy_consumption": {
+        "peak": 2000,
+        "off_peak": 1500,
+        "sat_partial_peak": 1000
+    },
+    "info": {
+        "customer_charge": 105,
+        "based_on_the_contracted_installed_capacity_rate": 137.5,
+        "regular_contract": {
+            "contracted_demand": 30,
+            "energy_charge_rate": 3.24
+        },
+        "sat_partial_peak_contract": {
+            "contracted_demand": 0,
+            "energy_charge_rate": 2.14
+        },
+        "off_peak_contract": {
+            "contracted_demand": 0,
+            "energy_charge_rate": 1.39
+        }
+    }
+}
