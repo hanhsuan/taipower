@@ -1,4 +1,4 @@
-CC = clang
+CC = cc
 
 ifdef DEBUG
 DFLAG = -DDEBUG
