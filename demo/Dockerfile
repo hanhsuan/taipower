@@ -4,7 +4,8 @@ RUN apt-get update && \
     apt-get install -y libgnutls28-dev libcurl4-gnutls-dev cmake gcc git curl
 
 RUN git clone https://github.com/risoflora/libsagui.git && cd libsagui && \
-    cmake -DBUILD_TESTING=ON && make all test
+    cmake -DBUILD_TESTING=ON && make all test && \
+    cp -L /libsagui/src/$(objdump -p /libsagui/src/libsagui.so | grep SONAME | sed 's/ //g' | sed 's/SONAME//g') /
 
 RUN git clone https://github.com/hanhsuan/taipower.git && \
     cd taipower/demo && \
@@ -15,7 +16,7 @@ FROM busybox:glibc
 
 COPY --from=builder /taipower/demo/apiserver /apiserver
 
-COPY --from=builder /libsagui/src/libsagui.so.3.4.0 /lib/libsagui.so.3
+COPY --from=builder /libsagui.so* /lib
 
 RUN echo '#!/bin/sh' > /start.sh && \
     echo -e '_term() {\n    kill -TERM "${child}" 2>/dev/null\n} \ntrap _term SIGTERM' >> /start.sh && \
