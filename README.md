@@ -32,4 +32,4 @@
 ### **使用**
 簡易之使用方式可以參考兩個資料夾：
 - **test:** 各函式之基本單元測試
-- **demo:** 使用此函式庫之指令列範例程式 `(demo.c)` 及 `Web API` 範例程式 `(apiserver.c)`，範例程式編譯完成後可以使用  `example` 資料夾內的檔案作為測試輸入。若僅想進行電價計算，可使用此範例程式即可。另提供 `Dockerfile` 可製作 `demo api server` 之容器，容器製作完成後可用指令 `docker run -d -p [主機埠號]:[容器內api server 聆聽埠號] [容器ID] [api server 聆聽埠號]`啟動容器。
+- **demo:** 使用此函式庫之指令列範例程式 `(demo.c)` 及 `Web API` 範例程式 `(apiserver.c)`，範例程式編譯完成後可以使用  `example` 資料夾內的檔案作為測試輸入。若僅想進行電價計算，可使用此範例程式即可。`Web API` 範例程式須透過 `Dockerfile` 製作容器後使用，容器製作之方式為在 `taipower` 專案目錄下，執行 `docker build -f demo/Dockerfile -t taipower:apiserver .` ,容器製作完成後可用指令 `docker run -d -p [主機埠號]:[容器內api server 聆聽埠號] [容器ID] [api server 聆聽埠號]`啟動容器。

@@ -23,21 +23,3 @@ do
     ./demo example/${f}
     echo -e "--------------- end ${f} ---------------\n"
 done
-
-if [ ! -f third_party/libsagui/include/sagui.h ]; then
-   echo "there is no libsagui, start to download it from github."
-   curl -L https://github.com/risoflora/libsagui/releases/download/v3.4.0/libsagui-3.4.0-linux_amd64.tar.gz -o libsagui-3.4.0-linux_amd64.tar.gz
-   mkdir -p third_party/libsagui
-   tar xzvf libsagui*.tar.gz -C third_party/libsagui --strip 1
-   rm -f libsagui*.tar.gz
-fi
-
-if [ -f apiserver ]; then
-  rm -f apiserver
-fi
-cc -I./third_party/cisson/ -I./third_party/libsagui/include -I./inc/ -I../inc/ -L./third_party/libsagui/lib64 ../src/taipower.c ./src/comm.c apiserver.c -o apiserver -lsagui
-
-if [ ! -f apiserver ]; then
-    echo "compile apiserver fail"
-    exit 1
-fi
