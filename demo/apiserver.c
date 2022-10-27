@@ -1,7 +1,12 @@
 #define CISSON_IMPLEMENTATION
+#include <event.h>
+#include <signal.h>
 #include "comm.h"
 #include "sagui.h"
-#include <unistd.h>
+
+void sighandler(int signal, short events, void *base){
+     event_base_loopbreak(base);
+}
 
 void req_cb(__SG_UNUSED void *cls, struct sg_httpreq *req,
             struct sg_httpres *res) {
@@ -41,18 +46,27 @@ void req_cb(__SG_UNUSED void *cls, struct sg_httpreq *req,
  */
 int main(int argc, char **argv) {
   struct sg_httpsrv *srv;
+  struct event ev_sigterm;
+  struct event_base *ev_base;
   uint16_t port;
+
   if (argc != 2) {
     printf("%s <PORT>\n", argv[0]);
     return EXIT_FAILURE;
   }
+
   port = strtol(argv[1], NULL, 10);
   srv = sg_httpsrv_new(req_cb, NULL);
   if (!sg_httpsrv_listen(srv, port, false)) {
     sg_httpsrv_free(srv);
     return EXIT_FAILURE;
   }
-  pause();
+
+  ev_base = event_init();
+
+  evsignal_set(&ev_sigterm, SIGTERM, sighandler, ev_base);
+  evsignal_add(&ev_sigterm, NULL);
+  event_dispatch();
   sg_httpsrv_shutdown(srv);
   sg_httpsrv_free(srv);
   return EXIT_SUCCESS;
