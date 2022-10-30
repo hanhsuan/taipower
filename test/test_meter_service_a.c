@@ -5,15 +5,15 @@
  * @brief 測試表燈(住商)簡易時間電價
  */
 int test_meter_service_a() {
-  power_factor_info pf = {.threshold_for_counted =
-                              TAIPOWER_DONT_COUNT_POWER_FACTOR};
-  meter_tou_a_o1_engery_consumption kwhs_for_2_level = {
+  struct power_factor_info pf = {.threshold_for_counted =
+                                     TAIPOWER_DONT_COUNT_POWER_FACTOR};
+  struct meter_tou_a_o1_engery_consumption kwhs_for_2_level = {
       .peak = 1200,
       .off_peak = 500,
       .sun_sat_off_peak = 500,
   };
 
-  meter_tou_a_o1_basic_info summer_info_for_2_level = {
+  struct meter_tou_a_o1_basic_info summer_info_for_2_level = {
       .customer_charge = 75,
       .portion_of_usage_limit = 2000,
       .peak_rate = 4.44,
@@ -22,14 +22,14 @@ int test_meter_service_a() {
       .exceed_limit_rate = 0.96,
       .power_factor = pf};
 
-  meter_tou_a_o2_engery_consumption kwhs_for_3_level = {
+  struct meter_tou_a_o2_engery_consumption kwhs_for_3_level = {
       .peak = 200,
       .partial_peak = 1000,
       .off_peak = 500,
       .sun_sat_off_peak = 500,
   };
 
-  meter_tou_a_o2_basic_info summer_info_for_3_level = {
+  struct meter_tou_a_o2_basic_info summer_info_for_3_level = {
       .customer_charge = 75,
       .portion_of_usage_limit = 2000,
       .peak_rate = 6.20,

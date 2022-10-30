@@ -1,16 +1,14 @@
 CC = cc
-
 ifdef DEBUG
-DFLAG = -DDEBUG
-CFLAGS = -std=c99 -g -Wall -fPIC
+	DFLAG = -DDEBUG
+	CFLAGS = -std=c99 -g -Wall -fPIC
 else
-DFLAG = 
-CFLAGS = -std=c99 -fPIC
+	DFLAG = 
+	CFLAGS = -std=c99 -fPIC
 endif
-
 IFLAGS = -I./inc
-
 LFLAGS = -L./
+
 
 SRCS = $(wildcard ./src/*.c)
 

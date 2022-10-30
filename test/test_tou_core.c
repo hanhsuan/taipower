@@ -5,16 +5,16 @@
  * @brief 測試時間電價共用函式
  */
 int test_tou_core() {
-  tou_o1_charge charge2 = {0};
-  tou_o1_engery_consumption energy2 = {.peak = 2000,
-                                       .sat_partial_peak = 500,
-                                       .off_peak = 1500,
-                                       .non_summer = 0,
-                                       .peak_max_demand = 10,
-                                       .sat_partial_peak_max_demand = 10,
-                                       .off_peak_max_demand = 10,
-                                       .non_summer_max_demand = 0};
-  tou_o1_basic_info basic_info2 = {
+  struct tou_o1_charge charge2 = {0};
+  struct tou_o1_engery_consumption energy2 = {.peak = 2000,
+                                              .sat_partial_peak = 500,
+                                              .off_peak = 1500,
+                                              .non_summer = 0,
+                                              .peak_max_demand = 10,
+                                              .sat_partial_peak_max_demand = 10,
+                                              .off_peak_max_demand = 10,
+                                              .non_summer_max_demand = 0};
+  struct tou_o1_basic_info basic_info2 = {
       .customer_charge = 262.5,
       .regular_contract.demand_charge_rate = 236.20,
       .regular_contract.contracted_demand = 20,
@@ -25,16 +25,17 @@ int test_tou_core() {
       .off_peak_contract.demand_charge_rate = 47.20,
       .off_peak_contract.contracted_demand = 0,
       .off_peak_contract.energy_charge_rate = 1.39};
-  tou_o2_charge charge3 = {0};
-  tou_o2_engery_consumption energy3 = {.peak = 81240,
-                                       .sat_partial_peak = 9480,
-                                       .off_peak = 36000,
-                                       .partial_peak = 0,
-                                       .peak_max_demand = 534,
-                                       .sat_partial_peak_max_demand = 312,
-                                       .off_peak_max_demand = 313,
-                                       .partial_peak_max_demand = 0};
-  tou_o2_basic_info basic_info3 = {
+  struct tou_o2_charge charge3 = {0};
+  struct tou_o2_engery_consumption energy3 = {.peak = 81240,
+                                              .sat_partial_peak = 9480,
+                                              .off_peak = 36000,
+                                              .partial_peak = 0,
+                                              .peak_max_demand = 534,
+                                              .sat_partial_peak_max_demand =
+                                                  312,
+                                              .off_peak_max_demand = 313,
+                                              .partial_peak_max_demand = 0};
+  struct tou_o2_basic_info basic_info3 = {
       .customer_charge = 0,
       .regular_contract.demand_charge_rate = 166.9,
       .regular_contract.contracted_demand = 480,

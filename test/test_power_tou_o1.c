@@ -12,10 +12,10 @@
  * 49,841.5元
  */
 int test_power_tou_o1() {
-  tou_o1_charge device_charge = {0};
-  tou_o1_engery_consumption device_ec = {
+  struct tou_o1_charge device_charge = {0};
+  struct tou_o1_engery_consumption device_ec = {
       .peak = 2000, .sat_partial_peak = 1000, .off_peak = 1500};
-  power_tou_o1_basic_info device_info = {
+  struct power_tou_o1_basic_info device_info = {
       .capacity.customer_charge = 105,
       .capacity.based_on_the_contracted_installed_capacity_rate = 137.5,
       .info.customer_charge = 0,
@@ -23,10 +23,10 @@ int test_power_tou_o1() {
       .info.regular_contract.energy_charge_rate = 3.24,
       .info.sat_partial_peak_contract.energy_charge_rate = 2.14,
       .info.off_peak_contract.energy_charge_rate = 1.39};
-  tou_o1_charge demand_charge = {0};
-  tou_o1_engery_consumption demand_ec = {
+  struct tou_o1_charge demand_charge = {0};
+  struct tou_o1_engery_consumption demand_ec = {
       .peak = 6000, .sat_partial_peak = 1000, .off_peak = 4000};
-  power_tou_o1_basic_info demand_info = {
+  struct power_tou_o1_basic_info demand_info = {
       .capacity.customer_charge = 0,
       .capacity.based_on_the_contracted_installed_capacity_rate = 0,
       .info.customer_charge = 262.5,

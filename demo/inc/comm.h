@@ -1,10 +1,13 @@
 #ifndef TAIPOWER_COMM_H
 #define TAIPOWER_COMM_H
 
+#include "taipower.h"
 #include <stdio.h>
 #include <string.h>
-#include "taipower.h"
-#define WANT_LIBC  /** 避免 cisson 與其他標準函式庫衝突，要放置在所有標頭檔最後，並且在有 libc 的環境下定義此參數 */
+#define WANT_LIBC /** 避免 cisson                                                                    \
+                     與其他標準函式庫衝突，要放置在所有標頭檔最後，並且在有 \
+                     libc 的環境下定義此參數 */
+#undef __STDC_WANT_LIB_EXT1__
 #include "cisson.h"
 
 #define MARCO_STRTOL(value, str, endptr, json_tree, key)                       \
@@ -51,7 +54,6 @@
  */
 int level_cmp(const void *p1, const void *p2);
 
-
 /**
  * @brief 設定表燈(住商)功率因素物件
  * @param max_kw 最大需量
@@ -60,7 +62,7 @@ int level_cmp(const void *p1, const void *p2);
  * @return TAIPOWER_ERROR 或 TAIPOWER_SUCC
  */
 int meter_power_factor_init(long max_kw, struct json_tree *json_tree,
-                            power_factor_info *pf);
+                            struct power_factor_info *pf);
 
 /**
  * @brief 表燈(住商)非時間電價
@@ -68,7 +70,6 @@ int meter_power_factor_init(long max_kw, struct json_tree *json_tree,
  * @return TAIPOWER_ERROR 或 TAIPOWER_SUCC
  */
 int meter_ntou_charge(struct json_tree *json_tree);
-
 
 /**
  * @brief 表燈(住商)簡易時間電價

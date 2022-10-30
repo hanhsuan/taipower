@@ -10,10 +10,10 @@
  * ＋流動電費 3.24元×2,000度+2.14元×500度+1.39元×1,500度 ＝總電費 14,621.5元
  */
 int test_meter_tou_b_o1() {
-  tou_o1_charge charge = {0};
-  tou_o1_engery_consumption ec = {
+  struct tou_o1_charge charge = {0};
+  struct tou_o1_engery_consumption ec = {
       .peak = 2000, .sat_partial_peak = 500, .off_peak = 1500};
-  tou_o1_basic_info info = {
+  struct tou_o1_basic_info info = {
       .customer_charge = 262.50,
       .regular_contract.contracted_demand = 20,
       .regular_contract.demand_charge_rate = 236.2,

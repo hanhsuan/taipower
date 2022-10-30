@@ -36,22 +36,24 @@ int main(int argc, char **argv) {
   } else {
     fread(json_string, sizeof(char), file_size, fp);
 
-    rjson(json_string, &json_tree);
-    char *type = to_string_pointer(&json_tree, query(&json_tree, "/type"));
-    if (!memcmp("\"residential\"", type, sizeof("\"residential\"") - 1) ||
-        !memcmp("\"commercial\"", type, sizeof("\"commercial\"") - 1)) {
-      meter_ntou_charge(&json_tree);
-    } else if (!memcmp("\"simple_tou\"", type, sizeof("\"simple_tou\"") - 1)) {
-      meter_simple_tou(&json_tree);
-    } else if (!memcmp("\"power_tou\"", type, sizeof("\"power_tou\"") - 1)) {
-      power_tou(&json_tree);
-    } else if (!memcmp("\"high_voltage_tou\"", type,
-                       sizeof("\"high_voltage_tou\"") - 1) ||
-               !memcmp("\"extra_high_voltage_tou\"", type,
-                       sizeof("\"extra_high_voltage_tou\"") - 1)) {
-      voltage(&json_tree);
-    } else {
-      fprintf(stdout, "type is not supported\n");
+    if (rjson(json_string, &json_tree) == JSON_ERROR_NO_ERRORS) {
+      char *type = to_string_pointer(&json_tree, query(&json_tree, "/type"));
+      if (!memcmp("\"residential\"", type, sizeof("\"residential\"") - 1) ||
+          !memcmp("\"commercial\"", type, sizeof("\"commercial\"") - 1)) {
+        meter_ntou_charge(&json_tree);
+      } else if (!memcmp("\"simple_tou\"", type,
+                         sizeof("\"simple_tou\"") - 1)) {
+        meter_simple_tou(&json_tree);
+      } else if (!memcmp("\"power_tou\"", type, sizeof("\"power_tou\"") - 1)) {
+        power_tou(&json_tree);
+      } else if (!memcmp("\"high_voltage_tou\"", type,
+                         sizeof("\"high_voltage_tou\"") - 1) ||
+                 !memcmp("\"extra_high_voltage_tou\"", type,
+                         sizeof("\"extra_high_voltage_tou\"") - 1)) {
+        voltage(&json_tree);
+      } else {
+        fprintf(stdout, "type is not supported\n");
+      }
     }
   }
 

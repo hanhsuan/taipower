@@ -1,6 +1,6 @@
 #include "taipower.h"
 
-double meter_ntou_charge_calc(double ec, meter_ntou_basic_info info) {
+double meter_ntou_charge_calc(double ec, struct meter_ntou_basic_info info) {
   double charge = 0;
   int level = 0;
   int level_diff = 0;
@@ -27,8 +27,8 @@ double meter_ntou_charge_calc(double ec, meter_ntou_basic_info info) {
   return charge;
 }
 
-double meter_tou_a_o1_charge_calc(meter_tou_a_o1_engery_consumption ec,
-                                  meter_tou_a_o1_basic_info info) {
+double meter_tou_a_o1_charge_calc(struct meter_tou_a_o1_engery_consumption ec,
+                                  struct meter_tou_a_o1_basic_info info) {
   double charge = 0;
   double exceed_ec =
       ec.peak + ec.off_peak + ec.sun_sat_off_peak - info.portion_of_usage_limit;
@@ -52,8 +52,8 @@ double meter_tou_a_o1_charge_calc(meter_tou_a_o1_engery_consumption ec,
   return charge;
 }
 
-double meter_tou_a_o2_charge_calc(meter_tou_a_o2_engery_consumption ec,
-                                  meter_tou_a_o2_basic_info info) {
+double meter_tou_a_o2_charge_calc(struct meter_tou_a_o2_engery_consumption ec,
+                                  struct meter_tou_a_o2_basic_info info) {
   double charge = 0;
   double exceed_ec = ec.peak + ec.partial_peak + ec.off_peak +
                      ec.sun_sat_off_peak - info.portion_of_usage_limit;
@@ -78,8 +78,9 @@ double meter_tou_a_o2_charge_calc(meter_tou_a_o2_engery_consumption ec,
   return charge;
 }
 
-int tou_o1_charge_calc(tou_o1_charge *charge, tou_o1_engery_consumption ec,
-                       tou_o1_basic_info info) {
+int tou_o1_charge_calc(struct tou_o1_charge *charge,
+                       struct tou_o1_engery_consumption ec,
+                       struct tou_o1_basic_info info) {
   double tmp = 0;
   double peak_exceed_contract = 0;
   double non_summer_exceed_contract = 0;
@@ -238,8 +239,9 @@ int tou_o1_charge_calc(tou_o1_charge *charge, tou_o1_engery_consumption ec,
   return TAIPOWER_SUCC;
 }
 
-int tou_o2_charge_calc(tou_o2_charge *charge, tou_o2_engery_consumption ec,
-                       tou_o2_basic_info info) {
+int tou_o2_charge_calc(struct tou_o2_charge *charge,
+                       struct tou_o2_engery_consumption ec,
+                       struct tou_o2_basic_info info) {
   double tmp = 0;
   double peak_exceed_contract = 0;
   double partial_peak_exceed_contract = 0;
@@ -377,21 +379,21 @@ int tou_o2_charge_calc(tou_o2_charge *charge, tou_o2_engery_consumption ec,
   return TAIPOWER_SUCC;
 }
 
-int meter_tou_b_o1_charge_calc(tou_o1_charge *charge,
-                               tou_o1_engery_consumption ec,
-                               tou_o1_basic_info info) {
+int meter_tou_b_o1_charge_calc(struct tou_o1_charge *charge,
+                               struct tou_o1_engery_consumption ec,
+                               struct tou_o1_basic_info info) {
   return tou_o1_charge_calc(charge, ec, info);
 }
 
-int meter_tou_b_o2_charge_calc(tou_o2_charge *charge,
-                               tou_o2_engery_consumption ec,
-                               tou_o2_basic_info info) {
+int meter_tou_b_o2_charge_calc(struct tou_o2_charge *charge,
+                               struct tou_o2_engery_consumption ec,
+                               struct tou_o2_basic_info info) {
   return tou_o2_charge_calc(charge, ec, info);
 }
 
-int power_tou_o1_charge_calc(tou_o1_charge *charge,
-                             tou_o1_engery_consumption ec,
-                             power_tou_o1_basic_info info) {
+int power_tou_o1_charge_calc(struct tou_o1_charge *charge,
+                             struct tou_o1_engery_consumption ec,
+                             struct power_tou_o1_basic_info info) {
   // 依裝置容量計算基本費之情況
   charge->detail.basic_charge = info.capacity.customer_charge;
   charge->detail.basic_charge +=
@@ -400,39 +402,39 @@ int power_tou_o1_charge_calc(tou_o1_charge *charge,
   return tou_o1_charge_calc(charge, ec, info.info);
 }
 
-int power_tou_o2_charge_calc(tou_o2_charge *charge,
-                             tou_o2_engery_consumption ec,
-                             tou_o2_basic_info info) {
+int power_tou_o2_charge_calc(struct tou_o2_charge *charge,
+                             struct tou_o2_engery_consumption ec,
+                             struct tou_o2_basic_info info) {
   return tou_o2_charge_calc(charge, ec, info);
 }
 
-int high_voltage_tou_o1_charge_calc(tou_o1_charge *charge,
-                                    tou_o1_engery_consumption ec,
-                                    tou_o1_basic_info info) {
+int high_voltage_tou_o1_charge_calc(struct tou_o1_charge *charge,
+                                    struct tou_o1_engery_consumption ec,
+                                    struct tou_o1_basic_info info) {
   // 高壓沒有 customer_charge，固定設為 0
   info.customer_charge = 0;
   return tou_o1_charge_calc(charge, ec, info);
 }
 
-int high_voltage_tou_o2_charge_calc(tou_o2_charge *charge,
-                                    tou_o2_engery_consumption ec,
-                                    tou_o2_basic_info info) {
+int high_voltage_tou_o2_charge_calc(struct tou_o2_charge *charge,
+                                    struct tou_o2_engery_consumption ec,
+                                    struct tou_o2_basic_info info) {
   // 高壓沒有 customer_charge，固定設為 0
   info.customer_charge = 0;
   return tou_o2_charge_calc(charge, ec, info);
 }
 
-int extra_high_voltage_tou_o1_charge_calc(tou_o1_charge *charge,
-                                          tou_o1_engery_consumption ec,
-                                          tou_o1_basic_info info) {
+int extra_high_voltage_tou_o1_charge_calc(struct tou_o1_charge *charge,
+                                          struct tou_o1_engery_consumption ec,
+                                          struct tou_o1_basic_info info) {
   // 特高壓沒有 customer_charge，固定設為 0
   info.customer_charge = 0;
   return tou_o1_charge_calc(charge, ec, info);
 }
 
-int extra_high_voltage_tou_o2_charge_calc(tou_o2_charge *charge,
-                                          tou_o2_engery_consumption ec,
-                                          tou_o2_basic_info info) {
+int extra_high_voltage_tou_o2_charge_calc(struct tou_o2_charge *charge,
+                                          struct tou_o2_engery_consumption ec,
+                                          struct tou_o2_basic_info info) {
   // 特高壓沒有 customer_charge，固定設為 0
   info.customer_charge = 0;
   return tou_o2_charge_calc(charge, ec, info);
@@ -459,7 +461,8 @@ double fine_calc(double contract, double exceed_contract,
   return 0;
 }
 
-double power_factor_reward_calc(double pre_total_charge, power_factor_info pf) {
+double power_factor_reward_calc(double pre_total_charge,
+                                struct power_factor_info pf) {
   double charge = 0;
   int pf_diff = pf.power_factor - pf.reward_base_line;
 

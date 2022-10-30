@@ -7,28 +7,28 @@
 int test_commercial() {
   double kwh;
 
-  meter_ntou_rate summer_levels[] = {
+  struct meter_ntou_rate summer_levels[] = {
       {.level = 330, .rate = 2.53},
       {.level = 700, .rate = 3.55},
       {.level = 1500, .rate = 4.25},
       {.level = TAIPOWER_EXCEED_KWH, .rate = 6.43}};
 
-  meter_ntou_rate non_summer_levels[] = {
+  struct meter_ntou_rate non_summer_levels[] = {
       {.level = 330, .rate = 2.12},
       {.level = 700, .rate = 2.91},
       {.level = 1500, .rate = 3.44},
       {.level = TAIPOWER_EXCEED_KWH, .rate = 5.05}};
 
-  power_factor_info pf = {.threshold_for_counted =
-                              TAIPOWER_DONT_COUNT_POWER_FACTOR};
+  struct power_factor_info pf = {.threshold_for_counted =
+                                     TAIPOWER_DONT_COUNT_POWER_FACTOR};
 
-  meter_ntou_basic_info summer_info = {.level_count = sizeof(summer_levels) /
-                                                      sizeof(meter_ntou_rate),
-                                       .levels = summer_levels,
-                                       .power_factor = pf};
+  struct meter_ntou_basic_info summer_info = {
+      .level_count = sizeof(summer_levels) / sizeof(struct meter_ntou_rate),
+      .levels = summer_levels,
+      .power_factor = pf};
 
-  meter_ntou_basic_info non_summer_info = {
-      .level_count = sizeof(non_summer_levels) / sizeof(meter_ntou_rate),
+  struct meter_ntou_basic_info non_summer_info = {
+      .level_count = sizeof(non_summer_levels) / sizeof(struct meter_ntou_rate),
       .levels = non_summer_levels,
       .power_factor = pf};
 

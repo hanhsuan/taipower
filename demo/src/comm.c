@@ -1,12 +1,12 @@
 #include "comm.h"
 
 int level_cmp(const void *p1, const void *p2) {
-  return (((const meter_ntou_rate *)p1)->level >
-          ((const meter_ntou_rate *)p2)->level);
+  return (((const struct meter_ntou_rate *)p1)->level >
+          ((const struct meter_ntou_rate *)p2)->level);
 }
 
 int meter_power_factor_init(long max_kw, struct json_tree *json_tree,
-                            power_factor_info *pf) {
+                            struct power_factor_info *pf) {
   char *endptr = NULL;
   char *tmp = NULL;
 
@@ -29,7 +29,7 @@ int meter_ntou_charge(struct json_tree *json_tree) {
 
   MARCO_STRTOL(long max_kw, tmp, endptr, json_tree, "/max_kw");
 
-  power_factor_info pf = {0};
+  struct power_factor_info pf = {0};
   if (meter_power_factor_init(max_kw, json_tree, &pf) == TAIPOWER_ERROR) {
     fprintf(stdout, "init power factor failed\n");
     return TAIPOWER_ERROR;
@@ -56,7 +56,7 @@ int meter_ntou_charge(struct json_tree *json_tree) {
     return TAIPOWER_ERROR;
   }
   cur = next_child(&(json_tree->tokens), root, NULL);
-  meter_ntou_rate levels[array_size];
+  struct meter_ntou_rate levels[array_size];
   while (cur != NULL) {
     array_size--;
     struct json_tree level_json = {0};
@@ -77,11 +77,11 @@ int meter_ntou_charge(struct json_tree *json_tree) {
 
     cur = next_child(&(json_tree->tokens), root, cur);
   }
-  array_size = sizeof(levels) / sizeof(meter_ntou_rate);
+  array_size = sizeof(levels) / sizeof(struct meter_ntou_rate);
 
-  qsort(levels, array_size, sizeof(meter_ntou_rate), level_cmp);
+  qsort(levels, array_size, sizeof(struct meter_ntou_rate), level_cmp);
 
-  meter_ntou_basic_info info = {
+  struct meter_ntou_basic_info info = {
       .level_count = array_size, .levels = levels, .power_factor = pf};
 
   double charge = meter_ntou_charge_calc(energy_consumption, info);
@@ -96,7 +96,7 @@ int meter_simple_tou(struct json_tree *json_tree) {
 
   MARCO_STRTOL(long max_kw, tmp, endptr, json_tree, "/max_kw");
 
-  meter_tou_a_o1_engery_consumption ec = {0};
+  struct meter_tou_a_o1_engery_consumption ec = {0};
 
   MARCO_STRTOD(ec.peak, tmp, endptr, json_tree, "/energy_consumption/peak");
 
@@ -106,7 +106,7 @@ int meter_simple_tou(struct json_tree *json_tree) {
   MARCO_STRTOD(ec.sun_sat_off_peak, tmp, endptr, json_tree,
                "/energy_consumption/sun_sat_off_peak");
 
-  meter_tou_a_o1_basic_info info = {0};
+  struct meter_tou_a_o1_basic_info info = {0};
 
   MARCO_STRTOD(info.customer_charge, tmp, endptr, json_tree,
                "/info/customer_charge");
@@ -132,11 +132,11 @@ int meter_simple_tou(struct json_tree *json_tree) {
   }
 
   if (*to_string_pointer(json_tree, query(json_tree, "/option")) == '2') {
-    meter_tou_a_o2_engery_consumption ec2 = {.peak = ec.peak,
-                                             .off_peak = ec.off_peak,
-                                             .sun_sat_off_peak =
-                                                 ec.sun_sat_off_peak};
-    meter_tou_a_o2_basic_info info2 = {
+    struct meter_tou_a_o2_engery_consumption ec2 = {.peak = ec.peak,
+                                                    .off_peak = ec.off_peak,
+                                                    .sun_sat_off_peak =
+                                                        ec.sun_sat_off_peak};
+    struct meter_tou_a_o2_basic_info info2 = {
         .customer_charge = info.customer_charge,
         .portion_of_usage_limit = info.portion_of_usage_limit,
         .peak_rate = info.peak_rate,
@@ -168,7 +168,7 @@ int power_tou(struct json_tree *json_tree) {
   char *tmp = NULL;
   char *basic_type = NULL;
 
-  tou_o1_engery_consumption ec = {0};
+  struct tou_o1_engery_consumption ec = {0};
 
   MARCO_STRTOD(ec.peak, tmp, endptr, json_tree, "/energy_consumption/peak");
 
@@ -178,7 +178,7 @@ int power_tou(struct json_tree *json_tree) {
   MARCO_STRTOD(ec.sat_partial_peak, tmp, endptr, json_tree,
                "/energy_consumption/sat_partial_peak");
 
-  power_tou_o1_basic_info info = {0};
+  struct power_tou_o1_basic_info info = {0};
 
   MARCO_STRTOL(long power_factor, tmp, endptr, json_tree, "/power_factor");
 
@@ -230,7 +230,7 @@ int power_tou(struct json_tree *json_tree) {
   MARCO_STRTOD(info.info.off_peak_contract.energy_charge_rate, tmp, endptr,
                json_tree, "/info/off_peak_contract/energy_charge_rate");
 
-  tou_o1_charge charge = {0};
+  struct tou_o1_charge charge = {0};
   if (TAIPOWER_SUCC != power_tou_o1_charge_calc(&charge, ec, info)) {
     fprintf(stdout, "power_tou_o1_charge_calc failed!!\n");
     return TAIPOWER_ERROR;
@@ -250,7 +250,7 @@ int voltage(struct json_tree *json_tree) {
   char *endptr = NULL;
   char *tmp = NULL;
 
-  tou_o1_engery_consumption ec = {0};
+  struct tou_o1_engery_consumption ec = {0};
   MARCO_STRTOD(ec.peak, tmp, endptr, json_tree, "energy_consumption/peak");
 
   MARCO_STRTOD(ec.sat_partial_peak, tmp, endptr, json_tree,
@@ -259,7 +259,7 @@ int voltage(struct json_tree *json_tree) {
   MARCO_STRTOD(ec.off_peak, tmp, endptr, json_tree,
                "energy_consumption/off_peak");
 
-  tou_o1_basic_info info = {0};
+  struct tou_o1_basic_info info = {0};
 
   MARCO_STRTOD(info.regular_contract.contracted_demand, tmp, endptr, json_tree,
                "info/regular_contract/contracted_demand");
@@ -298,10 +298,11 @@ int voltage(struct json_tree *json_tree) {
   info.power_factor.reward_per_percentage = 0.1;
 
   if (*to_string_pointer(json_tree, query(json_tree, "/option")) == '2') {
-    tou_o2_engery_consumption ec2 = {.peak = ec.peak,
-                                     .off_peak = ec.off_peak,
-                                     .sat_partial_peak = ec.sat_partial_peak};
-    tou_o2_basic_info info2 = {
+    struct tou_o2_engery_consumption ec2 = {.peak = ec.peak,
+                                            .off_peak = ec.off_peak,
+                                            .sat_partial_peak =
+                                                ec.sat_partial_peak};
+    struct tou_o2_basic_info info2 = {
         .customer_charge = info.customer_charge,
         .regular_contract.contracted_demand =
             info.regular_contract.contracted_demand,
@@ -335,7 +336,7 @@ int voltage(struct json_tree *json_tree) {
     MARCO_STRTOD(info2.partial_peak_contract.energy_charge_rate, tmp, endptr,
                  json_tree, "info/partial_peak_contract/energy_charge_rate");
 
-    tou_o2_charge charge = {0};
+    struct tou_o2_charge charge = {0};
     high_voltage_tou_o2_charge_calc(&charge, ec2, info2);
 
     fprintf(stdout,
@@ -345,7 +346,7 @@ int voltage(struct json_tree *json_tree) {
             charge.detail.energy_charge);
     MARCO_OUTPUT_JSON(json_tree, charge, 100);
   } else {
-    tou_o1_charge charge = {0};
+    struct tou_o1_charge charge = {0};
     high_voltage_tou_o1_charge_calc(&charge, ec, info);
 
     fprintf(stdout,
