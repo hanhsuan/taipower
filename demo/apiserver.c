@@ -1,11 +1,11 @@
 #define CISSON_IMPLEMENTATION
-#include <event.h>
-#include <signal.h>
 #include "comm.h"
 #include "sagui.h"
+#include <event.h>
+#include <signal.h>
 
-void sighandler(int signal, short events, void *base){
-     event_base_loopbreak(base);
+void sighandler(int signal, short events, void *base) {
+  event_base_loopbreak(base);
 }
 
 void req_cb(__SG_UNUSED void *cls, struct sg_httpreq *req,
@@ -17,24 +17,26 @@ void req_cb(__SG_UNUSED void *cls, struct sg_httpreq *req,
   if (json_string[0] == '\0') {
     rjson("{\"ERROR\": \"Empty payload\"}", &json_tree);
   } else {
-    rjson(json_string, &json_tree);
-    char *type =
-        to_string_pointer_fail(&json_tree, query(&json_tree, "/type"), "");
-    if (!memcmp("\"residential\"", type, sizeof("\"residential\"") - 1) ||
-        !memcmp("\"commercial\"", type, sizeof("\"commercial\"") - 1)) {
-      meter_ntou_charge(&json_tree);
-    } else if (!memcmp("\"simple_tou\"", type, sizeof("\"simple_tou\"") - 1)) {
-      meter_simple_tou(&json_tree);
-    } else if (!memcmp("\"power_tou\"", type, sizeof("\"power_tou\"") - 1)) {
-      power_tou(&json_tree);
-    } else if (!memcmp("\"high_voltage_tou\"", type,
-                       sizeof("\"high_voltage_tou\"") - 1) ||
-               !memcmp("\"extra_high_voltage_tou\"", type,
-                       sizeof("\"extra_high_voltage_tou\"") - 1)) {
-      voltage(&json_tree);
-    } else {
-      start_state(&json_tree, NULL, NULL);
-      rjson("{\"ERROR\": \"type is not supported\"}", &json_tree);
+    if (rjson(json_string, &json_tree) == JSON_ERROR_NO_ERRORS) {
+      char *type =
+          to_string_pointer_fail(&json_tree, query(&json_tree, "/type"), "");
+      if (!memcmp("\"residential\"", type, sizeof("\"residential\"") - 1) ||
+          !memcmp("\"commercial\"", type, sizeof("\"commercial\"") - 1)) {
+        meter_ntou_charge(&json_tree);
+      } else if (!memcmp("\"simple_tou\"", type,
+                         sizeof("\"simple_tou\"") - 1)) {
+        meter_simple_tou(&json_tree);
+      } else if (!memcmp("\"power_tou\"", type, sizeof("\"power_tou\"") - 1)) {
+        power_tou(&json_tree);
+      } else if (!memcmp("\"high_voltage_tou\"", type,
+                         sizeof("\"high_voltage_tou\"") - 1) ||
+                 !memcmp("\"extra_high_voltage_tou\"", type,
+                         sizeof("\"extra_high_voltage_tou\"") - 1)) {
+        voltage(&json_tree);
+      } else {
+        start_state(&json_tree, NULL, NULL);
+        rjson("{\"ERROR\": \"type is not supported\"}", &json_tree);
+      }
     }
   }
 

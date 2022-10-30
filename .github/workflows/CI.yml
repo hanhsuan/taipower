@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches:
+        - "main"
+  pull_request:
+    branches:
+        - "main"
+
+jobs:
+  compile-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: make library test
+        working-directory: ${{github.workspace}}
+        run: make all DEBUG=1
+      - name: make demo test
+        working-directory: ${{github.workspace}}
+        run: cd demo && ./compile.sh

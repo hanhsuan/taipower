@@ -15,33 +15,33 @@
  * 223.60元×500瓩＋7.49元×3,000度+2.76元×22,000度+1.78元×5,000度+1.26元×20,000度＝229,090元
  */
 int test_high_voltage_tou_o2() {
-  tou_o2_charge charge = {0};
-  tou_o2_engery_consumption ec = {.peak = 10000,
-                                  .partial_peak = 15000,
-                                  .sat_partial_peak = 5000,
-                                  .off_peak = 20000};
-  tou_o2_basic_info info = {.customer_charge = 0,
-                            .regular_contract.contracted_demand = 500,
-                            .regular_contract.demand_charge_rate = 223.6,
-                            .regular_contract.energy_charge_rate = 4.41,
-                            .partial_peak_contract.energy_charge_rate = 2.76,
-                            .sat_partial_peak_contract.energy_charge_rate =
-                                1.78,
-                            .off_peak_contract.energy_charge_rate = 1.26};
+  struct tou_o2_charge charge = {0};
+  struct tou_o2_engery_consumption ec = {.peak = 10000,
+                                         .partial_peak = 15000,
+                                         .sat_partial_peak = 5000,
+                                         .off_peak = 20000};
+  struct tou_o2_basic_info info = {
+      .customer_charge = 0,
+      .regular_contract.contracted_demand = 500,
+      .regular_contract.demand_charge_rate = 223.6,
+      .regular_contract.energy_charge_rate = 4.41,
+      .partial_peak_contract.energy_charge_rate = 2.76,
+      .sat_partial_peak_contract.energy_charge_rate = 1.78,
+      .off_peak_contract.energy_charge_rate = 1.26};
 
-  tou_o2_charge charge2 = {0};
-  tou_o2_engery_consumption ec2 = {.peak = 3000,
-                                   .partial_peak = 22000,
-                                   .sat_partial_peak = 5000,
-                                   .off_peak = 20000};
-  tou_o2_basic_info info2 = {.customer_charge = 0,
-                             .regular_contract.contracted_demand = 500,
-                             .regular_contract.demand_charge_rate = 223.6,
-                             .regular_contract.energy_charge_rate = 7.49,
-                             .partial_peak_contract.energy_charge_rate = 2.76,
-                             .sat_partial_peak_contract.energy_charge_rate =
-                                 1.78,
-                             .off_peak_contract.energy_charge_rate = 1.26};
+  struct tou_o2_charge charge2 = {0};
+  struct tou_o2_engery_consumption ec2 = {.peak = 3000,
+                                          .partial_peak = 22000,
+                                          .sat_partial_peak = 5000,
+                                          .off_peak = 20000};
+  struct tou_o2_basic_info info2 = {
+      .customer_charge = 0,
+      .regular_contract.contracted_demand = 500,
+      .regular_contract.demand_charge_rate = 223.6,
+      .regular_contract.energy_charge_rate = 7.49,
+      .partial_peak_contract.energy_charge_rate = 2.76,
+      .sat_partial_peak_contract.energy_charge_rate = 1.78,
+      .off_peak_contract.energy_charge_rate = 1.26};
 
   if (TAIPOWER_SUCC != high_voltage_tou_o2_charge_calc(&charge, ec, info) ||
       TAIPOWER_SUCC != high_voltage_tou_o2_charge_calc(&charge2, ec2, info2)) {

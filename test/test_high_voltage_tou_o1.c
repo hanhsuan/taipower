@@ -9,16 +9,16 @@
  * 223.60元×150瓩＋3.13元×15,600度+1.97元×5,000度+1.35元×13,000度＝109,768元
  */
 int test_high_voltage_tou_o1() {
-  tou_o1_charge charge = {0};
-  tou_o1_engery_consumption ec = {
+  struct tou_o1_charge charge = {0};
+  struct tou_o1_engery_consumption ec = {
       .peak = 15600, .sat_partial_peak = 5000, .off_peak = 13000};
-  tou_o1_basic_info info = {.customer_charge = 0,
-                            .regular_contract.contracted_demand = 150,
-                            .regular_contract.demand_charge_rate = 223.6,
-                            .regular_contract.energy_charge_rate = 3.13,
-                            .sat_partial_peak_contract.energy_charge_rate =
-                                1.97,
-                            .off_peak_contract.energy_charge_rate = 1.35};
+  struct tou_o1_basic_info info = {
+      .customer_charge = 0,
+      .regular_contract.contracted_demand = 150,
+      .regular_contract.demand_charge_rate = 223.6,
+      .regular_contract.energy_charge_rate = 3.13,
+      .sat_partial_peak_contract.energy_charge_rate = 1.97,
+      .off_peak_contract.energy_charge_rate = 1.35};
 
   if (TAIPOWER_SUCC != high_voltage_tou_o1_charge_calc(&charge, ec, info)) {
     return TAIPOWER_ERROR;
