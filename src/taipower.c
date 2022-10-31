@@ -474,3 +474,114 @@ double power_factor_reward_calc(double pre_total_charge,
 
   return -charge;
 }
+
+int is_valid_date_format(struct taipower_date *date, const char *format,
+                         const char *date_str, const int length) {
+  char check_symbol[] = {'c', 'y', 'M', 'd'};
+  char tmp_date_str[length + 1];
+  char *start_ptr = NULL;
+  char *end_ptr = NULL;
+
+  if (!date || !format || !date_str || length <= 0) {
+    return TAIPOWER_ERROR;
+  }
+
+  end_ptr = memchr(format, '\0', length + 1);
+  if (!end_ptr || (end_ptr - format) != length) {
+    return TAIPOWER_ERROR;
+  }
+
+  end_ptr = memchr(date_str, '\0', length + 1);
+  if (!end_ptr || (end_ptr - date_str) != length) {
+    return TAIPOWER_ERROR;
+  }
+
+  for (int i = 0; i < length; i++) {
+    if (*(date_str + i) < '0' || *(date_str + i) > '9') {
+      TAIPOWER_DEBUG("date_str should be all number [%.*s]\n", length,
+                     date_str);
+      return TAIPOWER_ERROR;
+    }
+  }
+
+  for (int i = 0; i < sizeof(check_symbol); i++) {
+    start_ptr = strchr(format, check_symbol[i]);
+    end_ptr = strrchr(format, check_symbol[i]);
+    if (!start_ptr || !end_ptr) {
+      continue;
+    }
+
+    for (int j = 1; j < (end_ptr - start_ptr - 1); j++) {
+      if (*(start_ptr + j) != check_symbol[i]) {
+        return TAIPOWER_ERROR;
+      }
+    }
+
+    memset(tmp_date_str, 0, sizeof(tmp_date_str));
+    memcpy(tmp_date_str, date_str + (start_ptr - format),
+           (end_ptr - start_ptr + 1));
+    if (check_symbol[i] == 'c') {
+      date->year = atoi(tmp_date_str) + 1911;
+    } else if (check_symbol[i] == 'y') {
+      date->year = atoi(tmp_date_str);
+    } else if (check_symbol[i] == 'M') {
+      date->month = atoi(tmp_date_str);
+      if (date->month > 12 || date->month < 1) {
+        return TAIPOWER_ERROR;
+      }
+    } else if (check_symbol[i] == 'd') {
+      date->day = atoi(tmp_date_str);
+      if (date->day < 1) {
+        return TAIPOWER_ERROR;
+      }
+    }
+  }
+
+  if (date->month == 2) {
+    if (date->day > (IS_LEAP_YEAR(date->year) ? 29 : 28)) {
+      return TAIPOWER_ERROR;
+    }
+  } else {
+    if (date->day > days_per_month[date->month]) {
+      return TAIPOWER_ERROR;
+    }
+  }
+
+  return TAIPOWER_SUCC;
+}
+
+int diff_days(struct taipower_date date1, struct taipower_date date2) {
+  int loop_index = 0;
+  int diff_days = 0;
+  int is_negtive = 1;
+
+  if (date1.year < date2.year) {
+    struct taipower_date tmp = date1;
+    date1 = date2;
+    date2 = tmp;
+    is_negtive = -1;
+  }
+
+  for (loop_index = date2.year; loop_index < date1.year; loop_index++) {
+    diff_days += IS_LEAP_YEAR(loop_index) ? 366 : 365;
+  }
+
+  for (loop_index = 1; loop_index < date2.month; loop_index++) {
+    diff_days -= days_per_month[loop_index];
+  }
+  if (date2.month > 2 && IS_LEAP_YEAR(date2.year)) {
+    diff_days--;
+  }
+  diff_days -= date2.day;
+
+  for (loop_index = 1; loop_index < date1.month; loop_index++) {
+    diff_days += days_per_month[loop_index];
+  }
+  if (date1.month > 2 && IS_LEAP_YEAR(date1.year)) {
+    diff_days++;
+  }
+
+  diff_days += date1.day;
+
+  return (diff_days * is_negtive);
+}
