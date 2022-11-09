@@ -49,6 +49,12 @@
     rjson(output_json, json_tree);                                             \
   }
 
+struct supported_function {
+  const char *name;
+  const int cmp_length;
+  int (*function)(struct json_tree *);
+};
+
 /**
  * @brief meter_ntou_rate 依照 level 成員進行 qsort 排序用之比較程式
  */
@@ -91,5 +97,28 @@ int power_tou(struct json_tree *json_tree);
  * @return TAIPOWER_ERROR 或 TAIPOWER_SUCC
  */
 int voltage(struct json_tree *json_tree);
+
+/**
+ * @brief 所支援之功能
+ */
+static const struct supported_function taipower_functions[] = {
+    {.name = "\"residential\"",
+     .cmp_length = sizeof("\"residential\"") - 1,
+     .function = meter_ntou_charge},
+    {.name = "\"commercial\"",
+     .cmp_length = sizeof("\"commercial\"") - 1,
+     .function = meter_ntou_charge},
+    {.name = "\"simple_tou\"",
+     .cmp_length = sizeof("\"simple_tou\"") - 1,
+     .function = meter_simple_tou},
+    {.name = "\"power_tou\"",
+     .cmp_length = sizeof("\"power_tou\"") - 1,
+     .function = power_tou},
+    {.name = "\"high_voltage_tou\"",
+     .cmp_length = sizeof("\"high_voltage_tou\"") - 1,
+     .function = voltage},
+    {.name = "\"extra_high_voltage_tou\"",
+     .cmp_length = sizeof("\"extra_high_voltage_tou\"") - 1,
+     .function = voltage}};
 
 #endif

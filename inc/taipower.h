@@ -3,6 +3,7 @@
 #define TAIPOWER_H
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef DEBUG
 #define TAIPOWER_DEBUG(fmt, ...)                                               \
@@ -30,6 +31,17 @@
 #define TAIPOWER_ONLY_SAT_PARTIAL_AND_OFF_PEAK_CONTRANT_DEMAND_FINE_RATE 4.8
 /** 僅週六半尖峰及離蜂需量其他時段用電流動電費罰款倍數 */
 #define TAIPOWER_ONLY_SAT_PARTIAL_AND_OFF_PEAK_CONTRANT_ENERGY_FINE_RATE 1.6
+
+/**
+ * @brief 判斷是否為閏年
+ * @ref
+ * https://stackoverflow.com/questions/9852837/leap-year-check-using-bitwise-operators-amazing-speed
+ */
+#define IS_LEAP_YEAR(year) (!(year & 3 || year & 15 && !(year % 25)))
+
+/** 各月份擁有之天數 */
+static int days_per_month[] = {0,  31, 28, 31, 30, 31, 30,
+                               31, 31, 30, 31, 30, 31};
 
 /**
  * @brief 功率因素物件
@@ -249,6 +261,16 @@ struct tou_o2_charge {
 };
 
 /**
+ * @brief 日期物件
+ * (date object)
+ */
+struct taipower_date {
+  int year;  /**< 年 */
+  int month; /**< 月 */
+  int day;   /**< 日 */
+};
+
+/**
  * @brief 計算表燈(住商)非時間電價
  * @param ec 所用度數
  * @param info 表燈(住商)非時間電價物件
@@ -403,5 +425,24 @@ double fine_calc(double contract, double exceed_contract,
  */
 double power_factor_reward_calc(double pre_total_charge,
                                 struct power_factor_info pf);
+
+/**
+ * @brief 依照指定格式檢查日期格式是否正確
+ * @param date 儲存檢查正確並轉換為數字之日期物件
+ * @param format 指定格式，c 表示民國年、y 表示西元年、M 表示月份、d 表示日
+ * @param date_str 待檢查及轉換之日期
+ * @param length 待檢查及轉換之日期字串長度
+ * @return TAIPOWER_SUCC/TAIPOWER_ERROR
+ */
+int is_valid_date_format(struct taipower_date *date, const char *format,
+                         const char *date_str, const int length);
+
+/**
+ * @brief 計算兩日期間之天數差異，以日期物件2為基準日，且不包含結尾日
+ * @param date1 日期物件1，請先確認格式正確
+ * @param date2 日期物件2，請先確認格式正確
+ * @return 天數差異
+ */
+int diff_days(struct taipower_date date1, struct taipower_date date2);
 
 #endif
