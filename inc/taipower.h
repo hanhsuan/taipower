@@ -37,7 +37,7 @@
  * @ref
  * https://stackoverflow.com/questions/9852837/leap-year-check-using-bitwise-operators-amazing-speed
  */
-#define IS_LEAP_YEAR(year) (!(year & 3 || year & 15 && !(year % 25)))
+#define IS_LEAP_YEAR(year) (!(year & 3 || (year & 15 && !(year % 25))))
 
 /** 各月份擁有之天數 */
 static int days_per_month[] = {0,  31, 28, 31, 30, 31, 30,
