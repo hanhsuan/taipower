@@ -14,6 +14,11 @@
   {}
 #endif
 
+/** 用於避免使用 assert 於 GCC 編譯時誤認為變數未使用
+ * https://stackoverflow.com/questions/777261/avoiding-unused-variables-warnings-when-using-assert-in-a-release-build
+ */
+#define _unused(x) ((void)(x))
+
 /** 非時間電價剩餘度數標記 */
 #define TAIPOWER_EXCEED_KWH 100000
 /** 自行標示不計算功率因素獎懲 */

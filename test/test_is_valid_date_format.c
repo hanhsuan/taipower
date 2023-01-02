@@ -55,5 +55,6 @@ int test_is_valid_date_format() {
              TAIPOWER_SUCC &&
          date.year == 2016 && date.month == 2 && date.day == 29);
 
+  _unused(date);
   return TAIPOWER_SUCC;
 }

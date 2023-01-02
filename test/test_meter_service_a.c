@@ -46,5 +46,9 @@ int test_meter_service_a() {
       (meter_tou_a_o2_charge_calc(kwhs_for_3_level, summer_info_for_3_level) -
        7377) < TAIPOWER_FLOAT_TOLERANCE);
 
+  _unused(summer_info_for_2_level);
+  _unused(summer_info_for_3_level);
+  _unused(kwhs_for_2_level);
+  _unused(kwhs_for_3_level);
   return 0;
 }
