@@ -14,6 +14,11 @@
   {}
 #endif
 
+/** 用於避免使用 assert 於 GCC 編譯時誤認為變數未使用
+ * https://stackoverflow.com/questions/777261/avoiding-unused-variables-warnings-when-using-assert-in-a-release-build
+ */
+#define _unused(x) ((void)(x))
+
 /** 非時間電價剩餘度數標記 */
 #define TAIPOWER_EXCEED_KWH 100000
 /** 自行標示不計算功率因素獎懲 */
@@ -37,7 +42,7 @@
  * @ref
  * https://stackoverflow.com/questions/9852837/leap-year-check-using-bitwise-operators-amazing-speed
  */
-#define IS_LEAP_YEAR(year) (!(year & 3 || year & 15 && !(year % 25)))
+#define IS_LEAP_YEAR(year) (!(year & 3 || (year & 15 && !(year % 25))))
 
 /** 各月份擁有之天數 */
 static int days_per_month[] = {0,  31, 28, 31, 30, 31, 30,

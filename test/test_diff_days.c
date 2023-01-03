@@ -18,5 +18,7 @@ int test_diff_days() {
   assert(diff_days(date1, date2) == 2197);
   assert(diff_days(date2, date1) == -2197);
 
+  _unused(date1);
+  _unused(date2);
   return TAIPOWER_SUCC;
 }

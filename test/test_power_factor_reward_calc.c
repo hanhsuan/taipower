@@ -14,5 +14,6 @@ int test_power_factor_reward_calc() {
   assert((charge - (-5840.35)) < TAIPOWER_FLOAT_TOLERANCE &&
          (charge - (-5840.35)) > TAIPOWER_FLOAT_NEGATIVE_TOLERANCE);
 
+  _unused(charge);
   return TAIPOWER_SUCC;
 }

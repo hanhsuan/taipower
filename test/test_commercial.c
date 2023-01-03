@@ -64,5 +64,8 @@ int test_commercial() {
   assert((meter_ntou_charge_calc(kwh, non_summer_info) - 5790.8) <
          TAIPOWER_FLOAT_TOLERANCE);
 
+  _unused(kwh);
+  _unused(summer_info);
+  _unused(non_summer_info);
   return 0;
 }

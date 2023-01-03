@@ -83,5 +83,8 @@ int test_residential() {
   assert((meter_ntou_charge_calc(kwh, non_summer_info) - 7406.4) <
          TAIPOWER_FLOAT_TOLERANCE);
 
+  _unused(kwh);
+  _unused(summer_info);
+  _unused(non_summer_info);
   return 0;
 }
