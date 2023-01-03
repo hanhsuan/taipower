@@ -518,6 +518,9 @@ int is_valid_date_format(struct taipower_date *date, const char *format,
     }
 
     tmp_date_str = (char *)calloc(length + 1, sizeof(char *));
+    if (!tmp_date_str) {
+      return TAIPOWER_ERROR;
+    }
     memcpy(tmp_date_str, date_str + (start_ptr - format),
            (end_ptr - start_ptr + 1));
     if (check_symbol[i] == 'c') {
