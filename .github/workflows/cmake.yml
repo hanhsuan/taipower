@@ -1,0 +1,25 @@
+name: cmake
+
+on:
+  push:
+    branches:
+        - "cmake"
+  pull_request:
+    branches:
+        - "cmake"
+
+jobs:
+  compile-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create build directory and run CMake
+        working-directory: ${{github.workspace}}
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build Project
+        working-directory: ${{github.workspace}}
+        run: cmake --build build --target all --config Release
