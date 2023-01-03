@@ -3,10 +3,10 @@ name: cmake
 on:
   push:
     branches:
-        - "cmake"
+        - "main"
   pull_request:
     branches:
-        - "cmake"
+        - "main"
 
 jobs:
   compile-test:
