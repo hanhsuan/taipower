@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
   if (file_size < 1) {
     fprintf(stdout, "Empty file\n");
   } else {
-    fread(json_string, sizeof(char), file_size, fp);
+    file_size = fread(json_string, sizeof(char), file_size, fp);
 
     if (rjson(json_string, &json_tree) == JSON_ERROR_NO_ERRORS) {
       char *type = to_string_pointer(&json_tree, query(&json_tree, "/type"));
