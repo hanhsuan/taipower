@@ -20,6 +20,11 @@ jobs:
       - name: Create build directory and run CMake
         working-directory: ${{github.workspace}}
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-      - name: Build Project
+      - name: Build Project (non windows)
         working-directory: ${{github.workspace}}
+        if: ${{ matrix.os }} != windows-latest
         run: cmake --build build --target all --config Release
+      - name: Build Project (windows)
+        working-directory: ${{github.workspace}}
+        if: ${{ matrix.os }} == windows-latest
+        run: cmake --build build --target ALL_BUILD --config Release
