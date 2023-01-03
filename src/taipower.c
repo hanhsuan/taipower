@@ -478,7 +478,7 @@ double power_factor_reward_calc(double pre_total_charge,
 int is_valid_date_format(struct taipower_date *date, const char *format,
                          const char *date_str, const int length) {
   char check_symbol[] = {'c', 'y', 'M', 'd'};
-  char tmp_date_str[length + 1];
+  char *tmp_date_str = NULL;
   char *start_ptr = NULL;
   char *end_ptr = NULL;
 
@@ -517,7 +517,7 @@ int is_valid_date_format(struct taipower_date *date, const char *format,
       }
     }
 
-    memset(tmp_date_str, 0, sizeof(tmp_date_str));
+    tmp_date_str = (char *)calloc(length + 1, sizeof(char *));
     memcpy(tmp_date_str, date_str + (start_ptr - format),
            (end_ptr - start_ptr + 1));
     if (check_symbol[i] == 'c') {
@@ -527,14 +527,17 @@ int is_valid_date_format(struct taipower_date *date, const char *format,
     } else if (check_symbol[i] == 'M') {
       date->month = atoi(tmp_date_str);
       if (date->month > 12 || date->month < 1) {
+        free(tmp_date_str);
         return TAIPOWER_ERROR;
       }
     } else if (check_symbol[i] == 'd') {
       date->day = atoi(tmp_date_str);
       if (date->day < 1) {
+        free(tmp_date_str);
         return TAIPOWER_ERROR;
       }
     }
+    free(tmp_date_str);
   }
 
   if (date->month == 2) {
