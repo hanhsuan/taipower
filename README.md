@@ -29,6 +29,18 @@
 
 另外提供之範例程式可透過資料夾內之 `compile.sh` 於 `Unix-like` 作業系統上進行編譯，其會透過 `curl` 指令下載解析 JSON 所需之單一標頭檔(`cisson.h`)，若有疑慮，可自行依照 `compile.sh` 中之網址前往下載，或搜尋 `cisson` 套件自行下載信任之檔案。
 
+提供 `cmake` 之跨平台編譯方式可參考 `github action` 中之方式使用：
+於專案中執行以下指令：
+
+Unix-like
+```shell
+cmake --build build --target all --config Release
+```
+Windows
+```shell
+cmake --build build --target ALL_BUILD --config Release
+```
+
 ### **使用**
 簡易之使用方式可以參考兩個資料夾：
 - **test:** 各函式之基本單元測試

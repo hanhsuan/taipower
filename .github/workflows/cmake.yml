@@ -1,0 +1,30 @@
+name: cmake
+
+on:
+  push:
+    branches:
+        - "main"
+  pull_request:
+    branches:
+        - "main"
+
+jobs:
+  compile-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create build directory and run CMake
+        working-directory: ${{github.workspace}}
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build Project (non windows)
+        working-directory: ${{github.workspace}}
+        if: matrix.os != 'windows-latest'
+        run: cmake --build build --target all --config Release
+      - name: Build Project (windows)
+        working-directory: ${{github.workspace}}
+        if: matrix.os == 'windows-latest'
+        run: cmake --build build --target ALL_BUILD --config Release
