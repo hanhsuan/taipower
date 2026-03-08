@@ -25,7 +25,7 @@
 - [x] 特高壓三段式時間電價
 
 ### **編譯**
-目前僅提供於 `Unix-like` 作業系統上編譯之 `Makefile`，但此函式庫並沒有依賴特定作業系統特有之函式庫，基本上可接受 `C99` 語法之編譯器皆可以進行編譯。採用 `Makefile` 執行 `make clean all` 指令若單元測試正確後會產生 `libtaipower.so` 及 `libtaipower.a` 兩個檔案，可依需求選擇動態函式庫或靜態函式庫接續開發。
+目前僅提供於 `Unix-like` 作業系統上編譯之 `Makefile`，但此函式庫並沒有依賴特定作業系統特有之函式庫，基本上可接受 `C11` 語法之編譯器皆可以進行編譯。採用 `Makefile` 執行 `make clean all` 指令若單元測試正確後會產生 `libtaipower.so` 及 `libtaipower.a` 兩個檔案，可依需求選擇動態函式庫或靜態函式庫接續開發。
 
 另外提供之範例程式可透過資料夾內之 `compile.sh` 於 `Unix-like` 作業系統上進行編譯，其會透過 `curl` 指令下載解析 JSON 所需之單一標頭檔(`cisson.h`)，若有疑慮，可自行依照 `compile.sh` 中之網址前往下載，或搜尋 `cisson` 套件自行下載信任之檔案。
 
