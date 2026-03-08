@@ -12,7 +12,7 @@
  * 49,841.5元
  */
 int test_power_tou_o1() {
-  struct tou_o1_charge device_charge = {0};
+  struct time_of_use_option_1_charge device_charge = {0};
   struct tou_o1_engery_consumption device_ec = {
       .peak = 2000, .sat_partial_peak = 1000, .off_peak = 1500};
   struct power_tou_o1_basic_info device_info = {
@@ -23,7 +23,7 @@ int test_power_tou_o1() {
       .info.regular_contract.energy_charge_rate = 3.24,
       .info.sat_partial_peak_contract.energy_charge_rate = 2.14,
       .info.off_peak_contract.energy_charge_rate = 1.39};
-  struct tou_o1_charge demand_charge = {0};
+  struct time_of_use_option_1_charge demand_charge = {0};
   struct tou_o1_engery_consumption demand_ec = {
       .peak = 6000, .sat_partial_peak = 1000, .off_peak = 4000};
   struct power_tou_o1_basic_info demand_info = {
@@ -37,7 +37,7 @@ int test_power_tou_o1() {
       .info.off_peak_contract.energy_charge_rate = 1.39};
 
   if (TAIPOWER_SUCC !=
-      power_tou_o1_charge_calc(&device_charge, device_ec, device_info)) {
+      power_time_of_use_option_1_charge_calc(&device_charge, device_ec, device_info)) {
     return TAIPOWER_ERROR;
   }
 
@@ -90,7 +90,7 @@ int test_power_tou_o1() {
              TAIPOWER_FLOAT_NEGATIVE_TOLERANCE);
 
   if (TAIPOWER_SUCC !=
-      power_tou_o1_charge_calc(&demand_charge, demand_ec, demand_info)) {
+      power_time_of_use_option_1_charge_calc(&demand_charge, demand_ec, demand_info)) {
     return TAIPOWER_ERROR;
   }
 

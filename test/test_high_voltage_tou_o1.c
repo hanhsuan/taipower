@@ -9,7 +9,7 @@
  * 223.60元×150瓩＋3.13元×15,600度+1.97元×5,000度+1.35元×13,000度＝109,768元
  */
 int test_high_voltage_tou_o1() {
-  struct tou_o1_charge charge = {0};
+  struct time_of_use_option_1_charge charge = {0};
   struct tou_o1_engery_consumption ec = {
       .peak = 15600, .sat_partial_peak = 5000, .off_peak = 13000};
   struct tou_o1_basic_info info = {
@@ -20,7 +20,7 @@ int test_high_voltage_tou_o1() {
       .sat_partial_peak_contract.energy_charge_rate = 1.97,
       .off_peak_contract.energy_charge_rate = 1.35};
 
-  if (TAIPOWER_SUCC != high_voltage_tou_o1_charge_calc(&charge, ec, info)) {
+  if (TAIPOWER_SUCC != high_voltage_time_of_use_option_1_charge_calc(&charge, ec, info)) {
     return TAIPOWER_ERROR;
   }
 

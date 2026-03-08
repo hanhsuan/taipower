@@ -5,7 +5,7 @@
  * @brief 測試時間電價共用函式
  */
 int test_tou_core() {
-  struct tou_o1_charge charge2 = {0};
+  struct time_of_use_option_1_charge charge2 = {0};
   struct tou_o1_engery_consumption energy2 = {.peak = 2000,
                                               .sat_partial_peak = 500,
                                               .off_peak = 1500,
@@ -50,7 +50,7 @@ int test_tou_core() {
       .off_peak_contract.contracted_demand = 0,
       .off_peak_contract.energy_charge_rate = 1.53};
 
-  tou_o1_charge_calc(&charge2, energy2, basic_info2);
+  time_of_use_option_1_charge_calc(&charge2, energy2, basic_info2);
 
   TAIPOWER_DEBUG("charge2.total_charge:[%lf]\n", charge2.total_charge);
   assert((charge2.total_charge - 14621.5) < TAIPOWER_FLOAT_TOLERANCE);
