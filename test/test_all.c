@@ -12,7 +12,7 @@ int test_extra_high_voltage_time_of_use_option_1();
 int test_extra_high_voltage_time_of_use_option_2();
 int test_power_factor_adjustment_calc();
 int test_diff_days();
-int test_isleapyear();
+int test_is_leap_year();
 int test_is_valid_date_format();
 
 int main() {
@@ -29,7 +29,7 @@ int main() {
   test_extra_high_voltage_time_of_use_option_2();
   test_power_factor_adjustment_calc();
   test_diff_days();
-  test_isleapyear();
+  test_is_leap_year();
   test_is_valid_date_format();
 
   return 0;

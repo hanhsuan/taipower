@@ -1,7 +1,7 @@
 #include "taipower.h"
 #include <assert.h>
 
-int test_isleapyear() {
+int test_is_leap_year() {
 
   assert(IS_LEAP_YEAR(1980));
   assert(IS_LEAP_YEAR(2000));
