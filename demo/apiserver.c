@@ -1,4 +1,4 @@
-#define CISSON_IMPLEMENTATION
+#define JSON_IMPL
 #include "comm.h"
 #include "sagui.h"
 #include <event.h>
@@ -13,11 +13,13 @@ void req_cb(__SG_UNUSED void *cls, struct sg_httpreq *req,
   struct json_tree json_tree = {0};
   struct sg_str *payload = sg_httpreq_payload(req);
   const char *json_string = sg_str_content(payload);
+  char *json_string_copy = strdup(json_string);
 
-  if (json_string[0] == '\0') {
+  if (json_string_copy[0] == '\0') {
     rjson("{\"ERROR\": \"Empty payload\"}", &json_tree);
   } else {
-    if (rjson(json_string, &json_tree) == JSON_ERROR_NO_ERRORS) {
+    rjson(json_string_copy, &json_tree);
+    if (json_tree.cur_state != JSS_ERROR_STATE) {
       char *type = to_string_pointer(&json_tree, query(&json_tree, "/type"));
       int index =
           (sizeof(taipower_functions) / sizeof(struct supported_function));
@@ -29,7 +31,7 @@ void req_cb(__SG_UNUSED void *cls, struct sg_httpreq *req,
         }
       }
       if (index < 0) {
-        start_state(&json_tree, NULL, NULL);
+        json_tree = (struct json_tree){0};
         rjson("{\"ERROR\": \"type is not supported\"}", &json_tree);
       }
     } else {
@@ -37,6 +39,7 @@ void req_cb(__SG_UNUSED void *cls, struct sg_httpreq *req,
     }
   }
 
+  free(json_string_copy);
   sg_httpres_send(res, to_string(&json_tree), "application/json", 200);
 }
 

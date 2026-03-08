@@ -1,6 +1,9 @@
 #include "taipower.h"
 
-double meter_ntou_charge_calc(double ec, struct meter_ntou_basic_info info) {
+static const int days_per_month[] = {0, 31, 28, 31, 30, 31, 30,
+                                     31, 31, 30, 31, 30, 31};
+
+double non_time_of_use_charge_calc(double ec, non_time_of_use_basic_info info) {
   double charge = 0;
   int level = 0;
   int level_diff = 0;
@@ -19,32 +22,32 @@ double meter_ntou_charge_calc(double ec, struct meter_ntou_basic_info info) {
   }
 
   // 計算功率因素獎懲
-  charge += (info.power_factor.threshold_for_counted ==
+  charge += (info.power_factor.min_demand_threshold ==
              TAIPOWER_DONT_COUNT_POWER_FACTOR)
                 ? 0
-                : power_factor_reward_calc(charge, info.power_factor);
+                : power_factor_adjustment_calc(charge, info.power_factor);
 
   return charge;
 }
 
-double meter_tou_a_o1_charge_calc(struct meter_tou_a_o1_engery_consumption ec,
-                                  struct meter_tou_a_o1_basic_info info) {
+double time_of_use_a_option_1_charge_calc(time_of_use_a_option_1_energy_consumption ec,
+                                  time_of_use_a_option_1_basic_info info) {
   double charge = 0;
   double exceed_ec =
-      ec.peak + ec.off_peak + ec.sun_sat_off_peak - info.portion_of_usage_limit;
+      ec.peak + ec.off_peak + ec.weekend_off_peak - info.usage_limit_kwh;
   // 基本電費
   charge += info.customer_charge;
 
   // 流動電費
   charge += info.peak_rate * ec.peak;
   charge += info.off_peak_rate * ec.off_peak;
-  charge += info.sun_sat_off_peak * ec.sun_sat_off_peak;
+  charge += info.weekend_off_peak * ec.weekend_off_peak;
 
   // 計算功率因素獎懲
-  charge += (info.power_factor.threshold_for_counted ==
+  charge += (info.power_factor.min_demand_threshold ==
              TAIPOWER_DONT_COUNT_POWER_FACTOR)
                 ? 0
-                : power_factor_reward_calc(charge, info.power_factor);
+                : power_factor_adjustment_calc(charge, info.power_factor);
 
   // 超額
   charge += (exceed_ec > 0) ? exceed_ec * info.exceed_limit_rate : 0;
@@ -52,11 +55,11 @@ double meter_tou_a_o1_charge_calc(struct meter_tou_a_o1_engery_consumption ec,
   return charge;
 }
 
-double meter_tou_a_o2_charge_calc(struct meter_tou_a_o2_engery_consumption ec,
-                                  struct meter_tou_a_o2_basic_info info) {
+double time_of_use_a_option_2_charge_calc(time_of_use_a_option_2_energy_consumption ec,
+                                  time_of_use_a_option_2_basic_info info) {
   double charge = 0;
   double exceed_ec = ec.peak + ec.partial_peak + ec.off_peak +
-                     ec.sun_sat_off_peak - info.portion_of_usage_limit;
+                     ec.weekend_off_peak - info.usage_limit_kwh;
   // 基本電費
   charge += info.customer_charge;
 
@@ -64,13 +67,13 @@ double meter_tou_a_o2_charge_calc(struct meter_tou_a_o2_engery_consumption ec,
   charge += info.peak_rate * ec.peak;
   charge += info.partial_peak_rate * ec.partial_peak;
   charge += info.off_peak_rate * ec.off_peak;
-  charge += info.sun_sat_off_peak * ec.sun_sat_off_peak;
+  charge += info.weekend_off_peak * ec.weekend_off_peak;
 
   // 計算功率因素獎懲
-  charge += (info.power_factor.threshold_for_counted ==
+  charge += (info.power_factor.min_demand_threshold ==
              TAIPOWER_DONT_COUNT_POWER_FACTOR)
                 ? 0
-                : power_factor_reward_calc(charge, info.power_factor);
+                : power_factor_adjustment_calc(charge, info.power_factor);
 
   // 超額
   charge += (exceed_ec > 0) ? exceed_ec * info.exceed_limit_rate : 0;
@@ -78,9 +81,9 @@ double meter_tou_a_o2_charge_calc(struct meter_tou_a_o2_engery_consumption ec,
   return charge;
 }
 
-int tou_o1_charge_calc(struct tou_o1_charge *charge,
-                       struct tou_o1_engery_consumption ec,
-                       struct tou_o1_basic_info info) {
+int time_of_use_option_1_charge_calc(time_of_use_option_1_charge *charge,
+                       time_of_use_option_1_energy_consumption ec,
+                       time_of_use_option_1_basic_info info) {
   double tmp = 0;
   double peak_exceed_contract = 0;
   double non_summer_exceed_contract = 0;
@@ -175,7 +178,7 @@ int tou_o1_charge_calc(struct tou_o1_charge *charge,
     // 夏月尖峰時間超約罰款
     tmp = 0;
     charge->detail.exceed_peak_contract_fine =
-        fine_calc(info.regular_contract.contracted_demand, peak_exceed_contract,
+        exceed_contract_fine_calc(info.regular_contract.contracted_demand, peak_exceed_contract,
                   &tmp, info.regular_contract.demand_charge_rate);
 
     // 在夏月，所以絕對不會有非夏月超約罰款
@@ -183,12 +186,12 @@ int tou_o1_charge_calc(struct tou_o1_charge *charge,
 
     // 週六半尖峰時間超約罰款
     charge->detail.exceed_sat_partial_contract_fine =
-        fine_calc(info.sat_partial_peak_contract.contracted_demand,
+        exceed_contract_fine_calc(info.sat_partial_peak_contract.contracted_demand,
                   partial_peak_exceed_contract, &tmp,
                   info.sat_partial_peak_contract.demand_charge_rate);
 
     // 離峰時間超約罰款
-    charge->detail.exceed_off_peak_contract_fine = fine_calc(
+    charge->detail.exceed_off_peak_contract_fine = exceed_contract_fine_calc(
         info.off_peak_contract.contracted_demand, off_peak_exceed_contract,
         &tmp, info.off_peak_contract.demand_charge_rate);
   } else {
@@ -201,29 +204,29 @@ int tou_o1_charge_calc(struct tou_o1_charge *charge,
                                     info.non_summer_contract.contracted_demand);
     tmp = 0;
     // 非夏月尖峰時間超約罰款
-    charge->detail.exceed_non_summer_contract_fine = fine_calc(
+    charge->detail.exceed_non_summer_contract_fine = exceed_contract_fine_calc(
         info.non_summer_contract.contracted_demand, non_summer_exceed_contract,
         &tmp, info.non_summer_contract.demand_charge_rate);
 
     // 週六半尖峰時間超約罰款
     charge->detail.exceed_sat_partial_contract_fine =
-        fine_calc(info.sat_partial_peak_contract.contracted_demand,
+        exceed_contract_fine_calc(info.sat_partial_peak_contract.contracted_demand,
                   partial_peak_exceed_contract, &tmp,
                   info.sat_partial_peak_contract.demand_charge_rate);
 
     // 離峰時間超約罰款
-    charge->detail.exceed_off_peak_contract_fine = fine_calc(
+    charge->detail.exceed_off_peak_contract_fine = exceed_contract_fine_calc(
         info.off_peak_contract.contracted_demand, off_peak_exceed_contract,
         &tmp, info.off_peak_contract.demand_charge_rate);
   }
 
   // 計算功率因素獎懲
-  if (ec.peak_max_demand > info.power_factor.threshold_for_counted ||
-      ec.non_summer_max_demand > info.power_factor.threshold_for_counted ||
+  if (ec.peak_max_demand > info.power_factor.min_demand_threshold ||
+      ec.non_summer_max_demand > info.power_factor.min_demand_threshold ||
       ec.sat_partial_peak_max_demand >
-          info.power_factor.threshold_for_counted ||
-      ec.off_peak_max_demand > info.power_factor.threshold_for_counted) {
-    charge->detail.power_factor_reward = power_factor_reward_calc(
+          info.power_factor.min_demand_threshold ||
+      ec.off_peak_max_demand > info.power_factor.min_demand_threshold) {
+    charge->detail.power_factor_adjustment = power_factor_adjustment_calc(
         charge->detail.basic_charge + charge->detail.energy_charge,
         info.power_factor);
   }
@@ -234,14 +237,14 @@ int tou_o1_charge_calc(struct tou_o1_charge *charge,
                          charge->detail.exceed_non_summer_contract_fine +
                          charge->detail.exceed_sat_partial_contract_fine +
                          charge->detail.exceed_off_peak_contract_fine +
-                         charge->detail.power_factor_reward;
+                         charge->detail.power_factor_adjustment;
 
   return TAIPOWER_SUCC;
 }
 
-int tou_o2_charge_calc(struct tou_o2_charge *charge,
-                       struct tou_o2_engery_consumption ec,
-                       struct tou_o2_basic_info info) {
+int time_of_use_option_2_charge_calc(time_of_use_option_2_charge *charge,
+                       time_of_use_option_2_energy_consumption ec,
+                       time_of_use_option_2_basic_info info) {
   double tmp = 0;
   double peak_exceed_contract = 0;
   double partial_peak_exceed_contract = 0;
@@ -323,7 +326,7 @@ int tou_o2_charge_calc(struct tou_o2_charge *charge,
       ec.peak_max_demand - info.regular_contract.contracted_demand;
   tmp = 0;
   charge->detail.exceed_peak_contract_fine =
-      fine_calc(info.regular_contract.contracted_demand, peak_exceed_contract,
+      exceed_contract_fine_calc(info.regular_contract.contracted_demand, peak_exceed_contract,
                 &tmp, info.regular_contract.demand_charge_rate);
 
   // 半尖峰時間超約瓩數＝當月半尖峰時間用電最高需量－（經常契約容量＋半尖峰契約容量）
@@ -331,7 +334,7 @@ int tou_o2_charge_calc(struct tou_o2_charge *charge,
                                  (info.regular_contract.contracted_demand +
                                   info.partial_peak_contract.contracted_demand);
   charge->detail.exceed_partial_peak_contract_fine =
-      fine_calc(info.partial_peak_contract.contracted_demand,
+      exceed_contract_fine_calc(info.partial_peak_contract.contracted_demand,
                 partial_peak_exceed_contract, &tmp,
                 info.partial_peak_contract.demand_charge_rate);
 
@@ -342,7 +345,7 @@ int tou_o2_charge_calc(struct tou_o2_charge *charge,
        info.partial_peak_contract.contracted_demand +
        info.sat_partial_peak_contract.contracted_demand);
   charge->detail.exceed_sat_partial_contract_fine =
-      fine_calc(info.sat_partial_peak_contract.contracted_demand,
+      exceed_contract_fine_calc(info.sat_partial_peak_contract.contracted_demand,
                 sat_partial_peak_exceed_contract, &tmp,
                 info.sat_partial_peak_contract.demand_charge_rate);
 
@@ -352,17 +355,17 @@ int tou_o2_charge_calc(struct tou_o2_charge *charge,
                               info.partial_peak_contract.contracted_demand +
                               info.sat_partial_peak_contract.contracted_demand +
                               info.off_peak_contract.contracted_demand);
-  charge->detail.exceed_off_peak_contract_fine = fine_calc(
+  charge->detail.exceed_off_peak_contract_fine = exceed_contract_fine_calc(
       info.off_peak_contract.contracted_demand, off_peak_exceed_contract, &tmp,
       info.off_peak_contract.demand_charge_rate);
 
   // 計算功率因素獎懲
-  if (ec.peak_max_demand > info.power_factor.threshold_for_counted ||
-      ec.partial_peak_max_demand > info.power_factor.threshold_for_counted ||
+  if (ec.peak_max_demand > info.power_factor.min_demand_threshold ||
+      ec.partial_peak_max_demand > info.power_factor.min_demand_threshold ||
       ec.sat_partial_peak_max_demand >
-          info.power_factor.threshold_for_counted ||
-      ec.off_peak_max_demand > info.power_factor.threshold_for_counted) {
-    charge->detail.power_factor_reward = power_factor_reward_calc(
+          info.power_factor.min_demand_threshold ||
+      ec.off_peak_max_demand > info.power_factor.min_demand_threshold) {
+    charge->detail.power_factor_adjustment = power_factor_adjustment_calc(
         charge->detail.basic_charge + charge->detail.energy_charge,
         info.power_factor);
   }
@@ -373,85 +376,84 @@ int tou_o2_charge_calc(struct tou_o2_charge *charge,
                          charge->detail.exceed_partial_peak_contract_fine +
                          charge->detail.exceed_sat_partial_contract_fine +
                          charge->detail.exceed_off_peak_contract_fine +
-                         charge->detail.power_factor_reward;
-  ;
+                         charge->detail.power_factor_adjustment;
 
   return TAIPOWER_SUCC;
 }
 
-int meter_tou_b_o1_charge_calc(struct tou_o1_charge *charge,
-                               struct tou_o1_engery_consumption ec,
-                               struct tou_o1_basic_info info) {
-  return tou_o1_charge_calc(charge, ec, info);
+int time_of_use_b_option_1_charge_calc(time_of_use_option_1_charge *charge,
+                               time_of_use_option_1_energy_consumption ec,
+                               time_of_use_option_1_basic_info info) {
+  return time_of_use_option_1_charge_calc(charge, ec, info);
 }
 
-int meter_tou_b_o2_charge_calc(struct tou_o2_charge *charge,
-                               struct tou_o2_engery_consumption ec,
-                               struct tou_o2_basic_info info) {
-  return tou_o2_charge_calc(charge, ec, info);
+int time_of_use_b_option_2_charge_calc(time_of_use_option_2_charge *charge,
+                               time_of_use_option_2_energy_consumption ec,
+                               time_of_use_option_2_basic_info info) {
+  return time_of_use_option_2_charge_calc(charge, ec, info);
 }
 
-int power_tou_o1_charge_calc(struct tou_o1_charge *charge,
-                             struct tou_o1_engery_consumption ec,
-                             struct power_tou_o1_basic_info info) {
+int low_voltage_time_of_use_option_1_charge_calc(time_of_use_option_1_charge *charge,
+                             time_of_use_option_1_energy_consumption ec,
+                             low_voltage_time_of_use_option_1_basic_info info) {
   // 依裝置容量計算基本費之情況
   charge->detail.basic_charge = info.capacity.customer_charge;
   charge->detail.basic_charge +=
       info.capacity.based_on_the_contracted_installed_capacity_rate *
       info.info.regular_contract.contracted_demand;
-  return tou_o1_charge_calc(charge, ec, info.info);
+  return time_of_use_option_1_charge_calc(charge, ec, info.info);
 }
 
-int power_tou_o2_charge_calc(struct tou_o2_charge *charge,
-                             struct tou_o2_engery_consumption ec,
-                             struct tou_o2_basic_info info) {
-  return tou_o2_charge_calc(charge, ec, info);
+int low_voltage_time_of_use_option_2_charge_calc(time_of_use_option_2_charge *charge,
+                             time_of_use_option_2_energy_consumption ec,
+                             time_of_use_option_2_basic_info info) {
+  return time_of_use_option_2_charge_calc(charge, ec, info);
 }
 
-int high_voltage_tou_o1_charge_calc(struct tou_o1_charge *charge,
-                                    struct tou_o1_engery_consumption ec,
-                                    struct tou_o1_basic_info info) {
+int high_voltage_time_of_use_option_1_charge_calc(time_of_use_option_1_charge *charge,
+                                    time_of_use_option_1_energy_consumption ec,
+                                    time_of_use_option_1_basic_info info) {
   // 高壓沒有 customer_charge，固定設為 0
   info.customer_charge = 0;
-  return tou_o1_charge_calc(charge, ec, info);
+  return time_of_use_option_1_charge_calc(charge, ec, info);
 }
 
-int high_voltage_tou_o2_charge_calc(struct tou_o2_charge *charge,
-                                    struct tou_o2_engery_consumption ec,
-                                    struct tou_o2_basic_info info) {
+int high_voltage_time_of_use_option_2_charge_calc(time_of_use_option_2_charge *charge,
+                                    time_of_use_option_2_energy_consumption ec,
+                                    time_of_use_option_2_basic_info info) {
   // 高壓沒有 customer_charge，固定設為 0
   info.customer_charge = 0;
-  return tou_o2_charge_calc(charge, ec, info);
+  return time_of_use_option_2_charge_calc(charge, ec, info);
 }
 
-int extra_high_voltage_tou_o1_charge_calc(struct tou_o1_charge *charge,
-                                          struct tou_o1_engery_consumption ec,
-                                          struct tou_o1_basic_info info) {
+int extra_high_voltage_time_of_use_option_1_charge_calc(time_of_use_option_1_charge *charge,
+                                          time_of_use_option_1_energy_consumption ec,
+                                          time_of_use_option_1_basic_info info) {
   // 特高壓沒有 customer_charge，固定設為 0
   info.customer_charge = 0;
-  return tou_o1_charge_calc(charge, ec, info);
+  return time_of_use_option_1_charge_calc(charge, ec, info);
 }
 
-int extra_high_voltage_tou_o2_charge_calc(struct tou_o2_charge *charge,
-                                          struct tou_o2_engery_consumption ec,
-                                          struct tou_o2_basic_info info) {
+int extra_high_voltage_time_of_use_option_2_charge_calc(time_of_use_option_2_charge *charge,
+                                          time_of_use_option_2_energy_consumption ec,
+                                          time_of_use_option_2_basic_info info) {
   // 特高壓沒有 customer_charge，固定設為 0
   info.customer_charge = 0;
-  return tou_o2_charge_calc(charge, ec, info);
+  return time_of_use_option_2_charge_calc(charge, ec, info);
 }
 
-double fine_calc(double contract, double exceed_contract,
-                 double *conuted_contract, double demand_charge_rate) {
+double exceed_contract_fine_calc(double contract, double exceed_contract,
+                 double *counted_contract, double demand_charge_rate) {
   double tmp = contract * 0.1;
 
-  if (conuted_contract == NULL)
+  if (counted_contract == NULL)
     return TAIPOWER_ERROR;
 
-  *conuted_contract = (*conuted_contract > 0) ? *conuted_contract : 0;
+  *counted_contract = (*counted_contract > 0) ? *counted_contract : 0;
   // 在契約容量10%以下部分按2倍計收基本電費，超過契約容量10%部分按3倍計收基本電費
-  if (exceed_contract > 0 && exceed_contract > *conuted_contract) {
-    exceed_contract -= *conuted_contract;
-    *conuted_contract += exceed_contract;
+  if (exceed_contract > 0 && exceed_contract > *counted_contract) {
+    exceed_contract -= *counted_contract;
+    *counted_contract += exceed_contract;
     if (tmp > exceed_contract) {
       return exceed_contract * demand_charge_rate * 2;
     } else {
@@ -461,21 +463,21 @@ double fine_calc(double contract, double exceed_contract,
   return 0;
 }
 
-double power_factor_reward_calc(double pre_total_charge,
-                                struct power_factor_info pf) {
+double power_factor_adjustment_calc(double subtotal_charge,
+                                power_factor_info pf) {
   double charge = 0;
-  int pf_diff = pf.power_factor - pf.reward_base_line;
+  int pf_diff = pf.power_factor - pf.baseline_percentage;
 
   charge =
-      ((pf_diff > pf.max_percentage_for_reward) ? pf.max_percentage_for_reward
+      ((pf_diff > pf.max_adjustment_percentage) ? pf.max_adjustment_percentage
                                                 : pf_diff) *
-      ((pf_diff > 0 ? pf.reward_per_percentage : pf.fine_per_percentage)) *
-      pre_total_charge / 100;
+      ((pf_diff > 0 ? pf.discount_per_percentage : pf.surcharge_per_percentage)) *
+      subtotal_charge / 100;
 
   return -charge;
 }
 
-int is_valid_date_format(struct taipower_date *date, const char *format,
+int is_valid_date_format(taipower_date *date, const char *format,
                          const char *date_str, const int length) {
   char check_symbol[] = {'c', 'y', 'M', 'd'};
   char *tmp_date_str = NULL;
@@ -504,7 +506,7 @@ int is_valid_date_format(struct taipower_date *date, const char *format,
     }
   }
 
-  for (int i = 0; i < sizeof(check_symbol); i++) {
+  for (int i = 0; i < (int)sizeof(check_symbol); i++) {
     start_ptr = strchr(format, check_symbol[i]);
     end_ptr = strrchr(format, check_symbol[i]);
     if (!start_ptr || !end_ptr) {
@@ -517,7 +519,7 @@ int is_valid_date_format(struct taipower_date *date, const char *format,
       }
     }
 
-    tmp_date_str = (char *)calloc(length + 1, sizeof(char *));
+    tmp_date_str = (char *)calloc(length + 1, sizeof(char));
     if (!tmp_date_str) {
       return TAIPOWER_ERROR;
     }
@@ -556,16 +558,16 @@ int is_valid_date_format(struct taipower_date *date, const char *format,
   return TAIPOWER_SUCC;
 }
 
-int diff_days(struct taipower_date date1, struct taipower_date date2) {
+int diff_days(taipower_date date1, taipower_date date2) {
   int loop_index = 0;
   int diff_days = 0;
-  int is_negtive = 1;
+  int is_negative = 1;
 
   if (date1.year < date2.year) {
-    struct taipower_date tmp = date1;
+    taipower_date tmp = date1;
     date1 = date2;
     date2 = tmp;
-    is_negtive = -1;
+    is_negative = -1;
   }
 
   for (loop_index = date2.year; loop_index < date1.year; loop_index++) {
@@ -589,5 +591,5 @@ int diff_days(struct taipower_date date1, struct taipower_date date2) {
 
   diff_days += date1.day;
 
-  return (diff_days * is_negtive);
+  return (diff_days * is_negative);
 }

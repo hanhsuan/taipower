@@ -9,7 +9,7 @@ IF(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Release)
 ENDIF()
 
-SET(CMAKE_C_STANDARD 99)
+SET(CMAKE_C_STANDARD 11)
 SET(PROJECT_DESCRIPTION "Calculator of electricity fee for Taipower")
 SET(PROJECT_URL "https://github.com/hanhsuan/taipower")
 SET(PROJECT_ISSUES_URL "${PROJECT_URL}/issues")

@@ -1,4 +1,4 @@
-#define CISSON_IMPLEMENTATION
+#define JSON_IMPL
 #include "comm.h"
 
 /**
@@ -36,7 +36,8 @@ int main(int argc, char **argv) {
   } else {
     file_size = fread(json_string, sizeof(char), file_size, fp);
 
-    if (rjson(json_string, &json_tree) == JSON_ERROR_NO_ERRORS) {
+    rjson(json_string, &json_tree);
+    if (json_tree.cur_state != JSS_ERROR_STATE) {
       char *type = to_string_pointer(&json_tree, query(&json_tree, "/type"));
       int index =
           (sizeof(taipower_functions) / sizeof(struct supported_function));

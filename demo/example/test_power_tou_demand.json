@@ -1,5 +1,5 @@
 {
-    "type": "power_tou",
+    "type": "power_time_of_use",
     "option": 1,
     "basic_type": "demand",
     "power_factor": 80,

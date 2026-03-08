@@ -2,7 +2,7 @@
 #include <assert.h>
 
 int test_is_valid_date_format() {
-  struct taipower_date date;
+  taipower_date date;
 
   assert(is_valid_date_format(NULL, "ycyyMMdd", "20221007", 8) ==
          TAIPOWER_ERROR);

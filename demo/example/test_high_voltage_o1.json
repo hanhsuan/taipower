@@ -1,5 +1,5 @@
 {
-    "type": "high_voltage_tou",
+    "type": "high_voltage_time_of_use",
     "option": 1,
     "power_factor": 80,
     "energy_consumption": {

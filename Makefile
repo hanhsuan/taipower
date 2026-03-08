@@ -1,10 +1,10 @@
 CC = cc
 ifdef DEBUG
 	DFLAG = -DDEBUG
-	CFLAGS = -std=c99 -g -Wall -fPIC
+	CFLAGS = -std=c11 -g -Wall -fPIC
 else
 	DFLAG = 
-	CFLAGS = -std=c99 -fPIC
+	CFLAGS = -std=c11 -fPIC
 endif
 IFLAGS = -I./inc
 LFLAGS = -L./

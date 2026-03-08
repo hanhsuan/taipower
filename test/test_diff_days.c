@@ -2,8 +2,8 @@
 #include <assert.h>
 
 int test_diff_days() {
-  struct taipower_date date1 = {.year = 2022, .month = 10, .day = 7};
-  struct taipower_date date2 = {.year = 2022, .month = 10, .day = 1};
+  taipower_date date1 = {.year = 2022, .month = 10, .day = 7};
+  taipower_date date2 = {.year = 2022, .month = 10, .day = 1};
 
   assert(diff_days(date1, date2) == 6);
   assert(diff_days(date2, date1) == -6);

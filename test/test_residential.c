@@ -7,7 +7,7 @@
 int test_residential() {
   double kwh;
 
-  struct meter_ntou_rate summer_levels[] = {
+  non_time_of_use_rate summer_levels[] = {
       {.level = 120, .rate = 1.63},
       {.level = 330, .rate = 2.38},
       {.level = 500, .rate = 3.52},
@@ -15,7 +15,7 @@ int test_residential() {
       {.level = 1000, .rate = 5.66},
       {.level = TAIPOWER_EXCEED_KWH, .rate = 6.99}};
 
-  struct meter_ntou_rate non_summer_levels[] = {
+  non_time_of_use_rate non_summer_levels[] = {
       {.level = 120, .rate = 1.63},
       {.level = 330, .rate = 2.10},
       {.level = 500, .rate = 2.89},
@@ -23,64 +23,64 @@ int test_residential() {
       {.level = 1000, .rate = 4.60},
       {.level = TAIPOWER_EXCEED_KWH, .rate = 5.48}};
 
-  struct power_factor_info pf = {.threshold_for_counted =
+  power_factor_info pf = {.min_demand_threshold =
                                      TAIPOWER_DONT_COUNT_POWER_FACTOR};
 
-  struct meter_ntou_basic_info summer_info = {
-      .level_count = sizeof(summer_levels) / sizeof(struct meter_ntou_rate),
+  non_time_of_use_basic_info summer_info = {
+      .level_count = sizeof(summer_levels) / sizeof(non_time_of_use_rate),
       .levels = summer_levels,
       .power_factor = pf};
-  struct meter_ntou_basic_info non_summer_info = {
-      .level_count = sizeof(non_summer_levels) / sizeof(struct meter_ntou_rate),
+  non_time_of_use_basic_info non_summer_info = {
+      .level_count = sizeof(non_summer_levels) / sizeof(non_time_of_use_rate),
       .levels = non_summer_levels,
       .power_factor = pf};
 
   kwh = 100;
 
-  assert((meter_ntou_charge_calc(kwh, summer_info) - 163) <
+  assert((non_time_of_use_charge_calc(kwh, summer_info) - 163) <
          TAIPOWER_FLOAT_TOLERANCE);
 
-  assert((meter_ntou_charge_calc(kwh, non_summer_info) - 163) <
+  assert((non_time_of_use_charge_calc(kwh, non_summer_info) - 163) <
          TAIPOWER_FLOAT_TOLERANCE);
 
   kwh = 200;
 
-  assert((meter_ntou_charge_calc(kwh, summer_info) - 386) <
+  assert((non_time_of_use_charge_calc(kwh, summer_info) - 386) <
          TAIPOWER_FLOAT_TOLERANCE);
 
-  assert((meter_ntou_charge_calc(kwh, non_summer_info) - 363.6) <
+  assert((non_time_of_use_charge_calc(kwh, non_summer_info) - 363.6) <
          TAIPOWER_FLOAT_TOLERANCE);
 
   kwh = 350;
 
-  assert((meter_ntou_charge_calc(kwh, summer_info) - 765.8) <
+  assert((non_time_of_use_charge_calc(kwh, summer_info) - 765.8) <
          TAIPOWER_FLOAT_TOLERANCE);
 
-  assert((meter_ntou_charge_calc(kwh, non_summer_info) - 694.4) <
+  assert((non_time_of_use_charge_calc(kwh, non_summer_info) - 694.4) <
          TAIPOWER_FLOAT_TOLERANCE);
 
   kwh = 550;
 
-  assert((meter_ntou_charge_calc(kwh, summer_info) - 1533.8) <
+  assert((non_time_of_use_charge_calc(kwh, summer_info) - 1533.8) <
          TAIPOWER_FLOAT_TOLERANCE);
 
-  assert((meter_ntou_charge_calc(kwh, non_summer_info) - 1324.9) <
+  assert((non_time_of_use_charge_calc(kwh, non_summer_info) - 1324.9) <
          TAIPOWER_FLOAT_TOLERANCE);
 
   kwh = 750;
 
-  assert((meter_ntou_charge_calc(kwh, summer_info) - 2537.3) <
+  assert((non_time_of_use_charge_calc(kwh, summer_info) - 2537.3) <
          TAIPOWER_FLOAT_TOLERANCE);
 
-  assert((meter_ntou_charge_calc(kwh, non_summer_info) - 2146.4) <
+  assert((non_time_of_use_charge_calc(kwh, non_summer_info) - 2146.4) <
          TAIPOWER_FLOAT_TOLERANCE);
 
   kwh = 1750;
 
-  assert((meter_ntou_charge_calc(kwh, summer_info) - 9194.8) <
+  assert((non_time_of_use_charge_calc(kwh, summer_info) - 9194.8) <
          TAIPOWER_FLOAT_TOLERANCE);
 
-  assert((meter_ntou_charge_calc(kwh, non_summer_info) - 7406.4) <
+  assert((non_time_of_use_charge_calc(kwh, non_summer_info) - 7406.4) <
          TAIPOWER_FLOAT_TOLERANCE);
 
   _unused(kwh);

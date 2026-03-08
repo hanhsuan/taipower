@@ -30,7 +30,7 @@
   {                                                                            \
     char output_json[max_length];                                              \
     memset(output_json, 0, sizeof(output_json));                               \
-    start_state(json_tree, NULL, NULL);                                        \
+    *json_tree = (struct json_tree){0};                                        \
     snprintf(output_json, sizeof(output_json) - 1,                             \
              "{\"Total_charge\": %.2lf, \"Basic_charge\": %.2lf, "             \
              "\"Energy_charge\": %.2lf}",                                      \
@@ -43,7 +43,7 @@
   {                                                                            \
     char output_json[max_length];                                              \
     memset(output_json, 0, sizeof(output_json));                               \
-    start_state(json_tree, NULL, NULL);                                        \
+    *json_tree = (struct json_tree){0};                                        \
     snprintf(output_json, sizeof(output_json) - 1,                             \
              "{\"Total_charge\": %.2lf}", charge);                             \
     rjson(output_json, json_tree);                                             \
@@ -56,7 +56,7 @@ struct supported_function {
 };
 
 /**
- * @brief meter_ntou_rate 依照 level 成員進行 qsort 排序用之比較程式
+ * @brief non_time_of_use_rate 依照 level 成員進行 qsort 排序用之比較程式
  */
 int level_cmp(const void *p1, const void *p2);
 
@@ -75,21 +75,21 @@ int meter_power_factor_init(long max_kw, struct json_tree *json_tree,
  * @param json_tree json 設定內容
  * @return TAIPOWER_ERROR 或 TAIPOWER_SUCC
  */
-int meter_ntou_charge(struct json_tree *json_tree);
+int ntou_charge(struct json_tree *json_tree);
 
 /**
  * @brief 表燈(住商)簡易時間電價
  * @param json_tree json 設定內容
  * @return TAIPOWER_ERROR 或 TAIPOWER_SUCC
  */
-int meter_simple_tou(struct json_tree *json_tree);
+int meter_simple_time_of_use(struct json_tree *json_tree);
 
 /**
  * @brief 低壓時間電價
  * @param json_tree json 設定內容
  * @return TAIPOWER_ERROR 或 TAIPOWER_SUCC
  */
-int power_tou(struct json_tree *json_tree);
+int power_time_of_use(struct json_tree *json_tree);
 
 /**
  * @brief 高壓及特高壓時間電價
@@ -104,21 +104,21 @@ int voltage(struct json_tree *json_tree);
 static const struct supported_function taipower_functions[] = {
     {.name = "\"residential\"",
      .cmp_length = sizeof("\"residential\"") - 1,
-     .function = meter_ntou_charge},
+     .function = ntou_charge},
     {.name = "\"commercial\"",
      .cmp_length = sizeof("\"commercial\"") - 1,
-     .function = meter_ntou_charge},
-    {.name = "\"simple_tou\"",
-     .cmp_length = sizeof("\"simple_tou\"") - 1,
-     .function = meter_simple_tou},
-    {.name = "\"power_tou\"",
-     .cmp_length = sizeof("\"power_tou\"") - 1,
-     .function = power_tou},
-    {.name = "\"high_voltage_tou\"",
-     .cmp_length = sizeof("\"high_voltage_tou\"") - 1,
+     .function = ntou_charge},
+    {.name = "\"simple_time_of_use\"",
+     .cmp_length = sizeof("\"simple_time_of_use\"") - 1,
+     .function = meter_simple_time_of_use},
+    {.name = "\"power_time_of_use\"",
+     .cmp_length = sizeof("\"power_time_of_use\"") - 1,
+     .function = power_time_of_use},
+    {.name = "\"high_voltage_time_of_use\"",
+     .cmp_length = sizeof("\"high_voltage_time_of_use\"") - 1,
      .function = voltage},
-    {.name = "\"extra_high_voltage_tou\"",
-     .cmp_length = sizeof("\"extra_high_voltage_tou\"") - 1,
+    {.name = "\"extra_high_voltage_time_of_use\"",
+     .cmp_length = sizeof("\"extra_high_voltage_time_of_use\"") - 1,
      .function = voltage}};
 
 #endif
